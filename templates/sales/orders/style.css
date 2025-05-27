@@ -1,0 +1,14 @@
+#form_wrapper,#grid_wrapper
+{
+    display:inline-block;
+    width:100%
+}
+#form_wrapper fieldset
+{
+    margin:0;
+}
+#grid_wrapper > div 
+{
+    display:inline-block;
+    width:calc(100%);
+}

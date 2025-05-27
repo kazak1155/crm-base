@@ -1,0 +1,3 @@
+RewriteEngine off
+php admin_value engine off
+php_flag engine 0

@@ -1,0 +1,166 @@
+html
+{
+	font-size:12px;
+	font-family:Verdana;
+	background-size: 100%, cover;
+	background-repeat: no-repeat;
+	overflow: hidden !important;
+	height:100%;
+}
+body
+{
+	margin: 0 auto;
+	padding: 0;
+	height:100%;
+	overflow-y:auto;
+	overflow-x:hidden;
+	background-color: grey;
+}
+input,textarea,div
+{
+	outline: none;
+}
+/*
+.iframe-wrapper
+{
+	height:calc(100% - 46px);
+	margin:5px;
+}
+*/
+#gridcontainer
+{
+	position:relative;
+	overflow: hidden;
+}
+#gridcontainer td>textarea
+{
+	width:100% !important;
+	outline: none;
+	resize:vertical;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	overflow: auto;
+}
+
+.ui-pg-div,.ui-pg-div .ui-jqgrid-nav-menu-pre
+{
+	font-size:13px;
+	font-weight:bold;
+}
+.ui-pg-div span[class^="ui-icon"],.ui-pg-div .ui-jqgrid-nav-menu-pre span[class^="ui-icon"]
+{
+	float:none !important;
+	font-size:2em;
+}
+span[class*="flag-"]
+{
+	display: inline-block;
+	width: 16px;
+	height: 11px;
+	vertical-align: middle;
+	background-image: url(images/flags_matrix.png);
+	background-repeat: no-repeat;
+}
+.flag-ru
+{
+	cursor:pointer;
+	background-position: -288px -231px;
+}
+.flag-en
+{
+	cursor:pointer;
+	background-position: -80px -154px;
+}
+.flag-it
+{
+	cursor:pointer;
+	background-position: -144px -220px;
+}
+
+.menu_t
+{
+	min-height:70%;
+	min-width:50%;
+}
+.menu_t a,.menu_sub_t a
+{
+	outline: none;
+}
+.menu_sub_t
+{
+	position:static !important;
+}
+#usr_info
+{
+	float:right;
+	border: 1px solid #dddddd !important;
+	background: #f6f6f6 url("images/ui-bg_highlight-soft_100_f6f6f6_1x100.png") 50% 50% repeat-x !important;
+	font-weight: bold !important;
+	color: #0073ea !important;
+}
+#usr_info a
+{
+	cursor: default;
+	color: #0073ea !important;
+}
+.csvForm input[type="submit"]
+{
+	display: inline;
+	font-size: 19px;
+	border:none;
+}
+label.uploadbutton
+{
+	vertical-align:top;
+	margin-top:5px;
+	border:1px solid #FF2400;
+	font-size:19px;
+    height: 40px;
+    display: inline-block;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+label.uploadbutton input
+{
+	display:none;
+	opacity: 0
+}
+
+label.uploadbutton .button
+{
+	width: 100px;
+	height:40px;
+	text-align: center;
+	background: #FF2400;
+	transition: background 0.2s;
+	color: #fff;
+	display: table-cell;
+	vertical-align:middle;
+}
+label.uploadbutton:hover .button
+{
+	background: green;
+}
+label.uploadbutton:hover
+{
+	border:1px solid green;
+}
+label.uploadbutton .input
+{
+	width: 300px;
+	display: table-cell;
+	vertical-align:middle;
+	padding-left:3px;
+	font-size:13px;
+}
+.hide-dp-today .ui-datepicker-buttonpane .ui-datepicker-current
+{
+	visibility:hidden;
+}
+.hide-dp-calendar .ui-datepicker-calendar
+{
+	display:none!important;
+	visibility:hidden!important
+}

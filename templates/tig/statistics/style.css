@@ -1,0 +1,9 @@
+#gridcontainer
+{
+	height:calc(100% - 35px);
+	background-color:#FFF;
+}
+.statistics-content
+{
+	height:calc(100% - 71px);
+}

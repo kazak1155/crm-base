@@ -1,0 +1,122 @@
+.plot-tooltip
+{
+	position: absolute;
+	display: none;
+	border: 1px solid #fdd;
+	padding: 2px;
+	background-color: #fee;
+	opacity: 0.80;
+}
+.row-highlight td
+{
+	font-weight: bold !important;
+}
+#gridcontainer > .cargos-wrapper,#gridcontainer > .wrapper
+{
+	display:inline-block;
+	vertical-align: top;
+}
+#gridcontainer .cargos-wrapper
+{
+	width:40% !important;
+}
+#gridcontainer > .wrapper
+{
+	margin-top: 5px;
+	margin-left: 5px;
+	width:calc(60% - 10px);
+}
+.slide-set
+{
+	background-color:#FFF;
+	border: 1px solid #10498D;
+	margin:0;
+}
+.slide-set-hidden
+{
+	height: 30px;
+	overflow: hidden;
+}
+.slide-set-hidden > div,
+.slide-set-hidden > .plot-wrapper,
+.slide-set-hidden > form,
+.slide-set-hidden > table
+{
+	visibility: hidden;
+}
+.slide-set-hidden > .plot-wrapper .plot
+{
+	width:0;
+	height:0;
+}
+.slide-set:not(.slide-set-hidden) .plot
+{
+	width:1100px;
+	height:400px;
+}
+.slide-set legend
+{
+	cursor: pointer;
+	font-size:14px;
+	background-color:#F6F6F6;
+	font-weight: bold;
+	color: #444444;
+	padding:5px 10px;
+	border: 2px solid #0073EA;
+}
+
+.slide-set legend:after
+{
+	transition: 1s;
+	font-family: FontAwesome;
+	color:#CC3333;
+	padding-left: 10px;
+	content:"\f062";
+}
+.slide-set-hidden legend:after
+{
+	transition: 1s;
+	content:"\f063";
+	color:#228B22;
+}
+.slide-set legend:hover
+{
+	background-color:#FFF;
+}
+#cargoinfo
+{
+
+}
+#wrapper > div
+{
+    display:inline-block;
+    vertical-align: top;
+    width:100%;
+}
+#form_wrapper form
+{
+
+}
+#form_wrapper fieldset
+{
+	background-color:#FFF;
+	border: 1px solid #10498D;
+	margin:0;
+}
+#form_wrapper legend
+{
+	background-color:#dddddd;
+	font-weight: bold;
+	color: #444444;
+	padding:.3em;
+	border: 1px solid #10498D;
+}
+#sub-grid-wrapper > div
+{
+	display: inline-block;
+	vertical-align:top;
+}
+#cargoinfo
+{
+	margin-bottom:5px;
+}

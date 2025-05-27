@@ -1,0 +1,44 @@
+#form_wrapper
+{
+    display:inline-block;
+    width:100%
+}
+#form_wrapper fieldset
+{
+    margin:0;
+}
+#form_wrapper #mail textarea
+{
+	height:200px;
+	resize:none;
+}
+#mail input[type="submit"]
+{
+	margin-top:5px;
+	padding:5px;
+	width:100%;
+	border: 1px solid #dddddd;
+	background: #f6f6f6;
+	font-weight: bold;
+	color: #0073ea;
+}
+#mail input[type="submit"]:hover
+{
+	border: 1px solid #0073ea;
+	background: #0073ea;
+	font-weight: bold;
+	color: #ffffff;
+}
+#form_wrapper .select2-container--default
+{
+	margin-bottom: 3px;
+}
+#form_wrapper .select2-container--default .select2-selection--single, #wrapper .select2-selection__arrow
+{
+    height:25px !important;
+    outline: none;
+}
+#form_wrapper .select2-selection__rendered
+{
+    line-height:23px !important;
+}

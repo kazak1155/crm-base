@@ -1,0 +1,85 @@
+/* jsTree block */
+.jstree-icon
+{
+    color:#2980b9;
+}
+#controls_wrapper
+{
+    padding:10px;
+    background-color:#E5F2FF;
+}
+/* override clicked and selected color */
+.jstree-default .jstree-wholerow-clicked
+{
+	background: #0CB238 !important;
+}
+.jstree-default .jstree-clicked,.jstree-default .jstree-clicked i
+{
+	color:#FFF !important;
+}
+.jstree-default .jstree-wholerow-hovered
+{
+	background: #0CB238 !important;
+}
+.jstree-default .jstree-hovered,.jstree-default .jstree-hovered i
+{
+	color:#FFF !important;
+}
+.jstree-progressbar
+{
+	display:none;
+	position: fixed;
+	width:calc(100% - 2px);
+	bottom:0;
+	z-index:101;
+}
+.jstree-progressbar > div {
+	background: #0CB238 none 0 0 no-repeat;
+}
+/**/
+.file_tree_dragover
+{
+	border-color:#beebff !important;
+}
+
+.tree_control
+{
+	height:32px;
+   margin:5px;
+   display:inline-block;
+   width:calc(33.3% - 10px);
+   outline:none;
+}
+.tree_button
+{
+    background-color:#fff;
+    color:#0073ea;
+    border:1px solid #c0c0c0;
+    padding:5px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.tree_button:hover
+{
+    background-color:#0073ea;
+    color:#FFF;
+    border:1px solid #0073ea;
+}
+.tree_button:disabled
+{
+	background-color:#0073ea;
+	color:#FFF;
+	border:1px solid #0073ea;
+}
+.tree_button i
+{
+	font-size:20px;
+   margin-right:10px;
+}
+#tree_search{
+    width:calc(100% - 47px);
+    background: white url('/css/images/find_icon.png') 10px center no-repeat;
+    padding-left:32px;
+    border:#ccc;
+}
+/* jsTree block ended */

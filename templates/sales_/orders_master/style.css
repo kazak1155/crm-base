@@ -1,0 +1,150 @@
+.select2-container--default .select2-selection--single, .select2-selection__arrow
+{
+    height:25px !important;
+    outline: none;
+}
+.select2-selection__rendered
+{
+    line-height:23px !important;
+}
+.float_label_wrapper
+{
+	min-width: 0px;
+}
+#form-contains
+{
+	overflow-y: scroll;
+	height: 400px;
+}
+.ni-divider
+{
+  border: 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+}
+.navigation_wrapper
+{
+	position: fixed;
+	bottom:0;
+	width:calc(100% - 10px);
+	text-align:right;
+}
+.navigation_wrapper div{
+	display: inline-block;
+	width: calc(50% - 5px);
+}
+textarea
+{
+	resize: vertical;
+	height:50px;
+	overflow-y: hidden;
+	vertical-align: middle;
+	width:100%;
+	margin-top: 18px;
+}
+.niceButton_blue
+{
+	width:100%;
+	margin: 5px 0px;
+	padding:5px;
+}
+.formula_wrapper
+{
+	position: relative;
+	background-color: #f8f8f8;
+	border: 1px solid #d8d8d8;
+	text-align: left;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+}
+.formula_wrapper .formula_div
+{
+	padding:2em;
+	margin-top:15px;
+}
+.formula_wrapper .formula_textarea
+{
+	opacity: 0;
+	-ms-filter: alpha(opacity=0);
+	filter: alpha(opacity=0);
+	color: transparent;
+	position: absolute;
+	font-size: 0;
+	top: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	text-indent: -10000px;
+	z-index: 20;
+	-o-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.formula_wrapper .formula_unit {
+	display: inline;
+	vertical-align: middle;
+	color: #1280ff;
+	padding: .35em .8em;
+	word-break: break-all;
+	margin: .4em;
+	line-height: 1.4;
+	border-radius: 1em;
+	background-color: #ffffff;
+	border: 1px solid #1280ff;
+}
+.formula_wrapper .formula_operator
+{
+	display: inline;
+	vertical-align: middle;
+	color: red;
+	padding: .35em .8em;
+	word-break: break-all;
+	margin: .4em;
+	line-height: 1.4;
+	border-radius: 1em;
+	background-color: #ffffff;
+	border: 1px solid red;
+}
+.formula_wrapper .formula_bracket
+{
+	display: inline;
+	vertical-align: middle;
+	color: green;
+	padding: .35em .8em;
+	word-break: break-all;
+	margin: .4em;
+	line-height: 1.4;
+	border-radius: 1em;
+	background-color: #ffffff;
+	border: 1px solid green;
+}
+.formula_wrapper .formula_special
+{
+	font-weight: bold;
+	display: inline;
+	vertical-align: middle;
+	color: #8b4513;
+	padding: .35em .8em;
+	word-break: break-all;
+	margin: .4em;
+	line-height: 1.4;
+	border-radius: 1em;
+	background-color: #ffffff;
+	border: 2px solid #8b4513;
+}
+#form-calc ul
+{
+
+}
+#form-calc li
+{
+	width:calc(32% - 10px);
+	margin:5px;
+	padding:5px;
+	display: inline-block;
+	background: #E2E2E2;
+	border: 1px solid #CCC;
+}

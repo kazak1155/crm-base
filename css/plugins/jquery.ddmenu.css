@@ -1,0 +1,158 @@
+.menu-cont
+{
+	position:relative;
+	z-index:500;
+	display:inline-block;
+	width:100%;
+	min-width:700px;
+	height:35px;
+}
+.menu-cont a
+{
+	display:block;
+	text-decoration:none;
+	color:#fff;
+	word-wrap:break-word;
+	word-break: break-word;
+}
+.menu-cont ul
+{
+	width:100%;
+	margin:0;
+	background-color:#00969e;
+	list-style:none;
+	padding:0;
+}
+.menu-cont li
+{
+	cursor:pointer;
+
+	padding-left:10px;
+	padding-right:10px;
+
+	position:relative;
+
+	background-color:#00969e;
+
+	/*float:left;*/
+	display:inline-block;
+	margin-right:-4px;
+
+	line-height:35px;
+
+	min-width:200px;
+
+	color:#fff;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.switcher
+{
+	padding-right:45px !important;
+	min-width:0 !important;
+}
+.switcher span
+{
+	text-align:center;
+	position:absolute;
+	right:0;
+	top:0;
+	background-color:#006368;
+	width:40px;
+}
+.menu-cont a
+{
+	display:inline-block;
+}
+.menu-cont li:hover
+{
+	background-color:#00d5e0;
+}
+.menu-cont .icon
+{
+	text-align: center;
+	position: absolute;
+	right: 0;
+	top: 0;
+	background-color: #006368;
+	width: 40px;
+}
+.menu-cont #ddmenu-agents,
+.menu-cont .ddmenu-icon
+{
+	text-align: center;
+	position: absolute;
+	right: 0;
+	top: 0;
+	background-color: #006368;
+	width: 40px;
+}
+.menu-main-ul
+{
+	-webkit-box-shadow: 0px 4px 10px 0px rgba(200,200,200,0.75);
+	-moz-box-shadow: 0px 4px 10px 0px rgba(200,200,200,0.75);
+	box-shadow: 0px 4px 10px 0px rgba(200,200,200,0.75);
+	display:block;
+	height:100%;
+}
+.menu-main-ul li>ul
+{
+	position:absolute;
+	/*top:calc(100% + 1px);*/
+	top:100%;
+	left:0;
+	display:none;
+	padding:0;
+}
+/*
+.menu-main-ul li>ul li
+{
+
+}
+*/
+.menu-main-ul i
+{
+	font-size:2em;
+	vertical-align:middle;
+}
+.sub-pointer
+{
+	text-align:center;
+	position:absolute;
+	right:0;
+	top:0;
+	background-color:#006368;
+	width:40px;
+}
+.sub-open-all
+{
+	text-align:center;
+	position:absolute;
+	left: calc(100% - 90px);
+	top:0;
+	background-color:#006368;
+	width:40px;
+}
+.li-divider
+{
+	height:1px !important;
+	background-color:#006368 !important;
+}
+.direct-actions
+{
+	float:right !important;
+	min-width:0 !important;
+}
+.disabled-li
+{
+	background-color:#C0C0C0 !important;
+}
+.disabled-li a
+{
+	color:#000 !important;
+}

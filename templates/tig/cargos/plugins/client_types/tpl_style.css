@@ -1,0 +1,41 @@
+form
+{
+	width: 100%;
+}
+.cb-container
+{
+	cursor: pointer;
+	border: 1px solid #BBBBBB;
+	margin: 3px 0;
+	padding: 5px 5px;
+	display: inline-block;
+	width:calc(50% - 15px);
+}
+.cb-container:hover
+{
+	background-color: #ffffe5;
+	transition: 0.4s;
+}
+.cb-container > div
+{
+	width: calc(50% - 5px);
+	vertical-align: middle;
+	display: inline-block;
+}
+.fa-container
+{
+	text-align: right;
+}
+.fa-check,
+.fa-times
+{
+	font-size: 2em !important;
+}
+.fa-check
+{
+	color:green;
+}
+.fa-times
+{
+	color:red;
+}

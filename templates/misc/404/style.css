@@ -1,0 +1,7 @@
+.not-found-page
+{
+	text-align: center;
+	height: calc(100% - 35px);
+	width: 100%;
+	background: url("/css/images/404.png") no-repeat center;
+}

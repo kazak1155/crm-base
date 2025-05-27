@@ -1,0 +1,41 @@
+{
+	"tig":{
+		"db_name":"tig50_view",
+		"orders": {
+			"plugins": {
+				"paking": "tig50_view",
+				"composition": "tig50_view"
+			}
+		}
+	},
+	"services":{
+		"db_name":"tig50"
+	},
+	"agents":{
+		"db_name":"tig50_view"
+	},
+	"sales_":{
+		"db_name":"sales_new"
+	},
+	"external":{
+		"db_name":"tig50_view"
+	},
+	"adm":{
+		"db_name":"srv",
+		"online_users":{
+			"db_name":"tig50_view"
+		}
+	},
+	"misc":{
+		"db_name":"tig50_view",
+		"mail_box":{
+			"db_name":"tig50_view"
+		},
+		"rates_moscow_adm":{
+			"db_name":"tig50"
+		},
+		"service_rates":{
+			"db_name":"tig50"
+		}
+	}
+}

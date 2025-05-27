@@ -1,0 +1,24 @@
+.select2-container--default .select2-selection--single,.select2-selection__arrow
+{
+	height:25px !important;
+	margin-bottom:3px;
+}
+.select2-selection__rendered
+{
+	line-height:20px !important;
+}
+.select2-results {
+    margin: 4px 4px 4px 0;
+    max-height: 150px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0 0 0 4px;
+    position: relative;
+}
+.select2-results ul {
+	max-height: 150px !important;
+}
+#form_wrapper textarea {
+	resize:none;
+	height:50px;
+}

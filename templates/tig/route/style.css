@@ -1,0 +1,28 @@
+.sel_cont
+{
+	margin-left:5px;
+	width:calc(100% - 10px);
+	margin-top: 5px;
+}
+.select2me
+{
+	width:100%;
+}
+.sel_cont .select2-container--default .select2-selection--single, .sel_cont .select2-selection__arrow{
+    height:30px !important;
+    outline: none;
+}
+.sel_cont .select2-selection__rendered {
+    line-height:28px !important;
+}
+.sel_cont .select2me {
+    min-width:100px;
+}
+.sel_cont textarea {
+	resize:none;
+	margin:5px;
+	width:calc(100% - 20px);
+	height:200px;
+	overflow:hidden;
+	overflow-y:scroll;
+}

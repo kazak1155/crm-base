@@ -1,0 +1,104 @@
+.active-rate-select
+{
+	background-color: #228B22 !important;
+	border:1px solid #FFF !important;
+}
+.active-rate-select .select2-selection__rendered
+{
+	color:#FFF !important;
+}
+.active-rate-select .select2-selection__arrow b
+{
+	border-color:#FFF transparent transparent transparent !important;
+}
+
+.navigation-wrapper,
+.forms-wrapper,
+.grids-wrapper
+{
+	display: inline-block;
+}
+.navigation-wrapper
+{
+	width: 100%;
+	margin-top: 3px;
+}
+.init-none
+{
+	display: none;
+}
+.navigation-wrapper .selects-wrapper,
+.navigation-wrapper .buttons-wrapper
+{
+	display:inline-block;
+}
+.navigation-wrapper .selects-wrapper
+{
+	width:calc(25% - 9px);
+}
+.navigation-wrapper .buttons-wrapper
+{
+	width:calc(51% - 10px);
+	vertical-align: top;
+}
+.navigation-wrapper .buttons-wrapper button
+{
+	outline: none;
+	padding: 6px 0;
+	width:calc(26% - 14px);
+}
+.navigation-wrapper .rate-description-wrapper
+{
+	margin-top: 15px;
+	width:calc(100% - 15px);
+	height:25px;
+}
+.navigation-wrapper .rate-description-wrapper textarea
+{
+	resize:none;
+}
+.navigation-wrapper .rate-description-wrapper label
+{
+	color:#000 !important;
+	font-weight: bold;
+}
+.forms-wrapper
+{
+	width:40%;
+}
+.forms-wrapper > div
+{
+	margin-top: 5px;
+}
+.forms-wrapper table
+{
+	width:100%;
+}
+.forms-wrapper form
+{
+	height: 350px;
+	width: 100%;
+	overflow-y: scroll;
+}
+.slide-set
+{
+	background-color:#FFF;
+	border: 1px solid #10498D;
+	margin:0;
+}
+.slide-set legend
+{
+	border-radius: 5px;
+	font-size:14px;
+	background-color:#F6F6F6;
+	font-weight: bold;
+	color: #444444;
+	padding:5px;
+	border: 2px solid #0073EA;
+}
+.grids-wrapper
+{
+	margin-top:19px;
+	vertical-align: top;
+	width:calc(60% - 10px);
+}

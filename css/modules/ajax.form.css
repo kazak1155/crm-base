@@ -1,0 +1,45 @@
+/**********************/
+.float_label_wrapper
+{
+    display:inline-block;
+    margin:5px;
+    position: relative;
+    top: auto;
+    left: auto;
+    min-width:150px;
+}
+.float_label
+{
+	display:inline-block;
+	overflow:hidden;
+	text-overflow:ellipsis;
+    position: absolute;
+    top: 5px;
+    right: 1px;
+    bottom: 1px;
+    left: 4px;
+    z-index: 1;
+    height: 2.5em;
+    font-size: 13px;
+    line-height: 3.5em;
+    color: #999;
+    white-space: nowrap;
+    cursor: text;
+    /*transition:all .1s ease;*/
+}
+.float_input,.float_input:disabled
+{
+    margin-top:15px;
+    padding:4px;
+    display: inline-block;
+    border: 1px solid #d4d4d4;
+    box-shadow: inset 0px 2px 2px #ececec;
+    width:calc(100% - 5px);
+}
+.float_input:focus ~ .float_label,.float_input:disabled:not([empty]) ~ .float_label, .float_input:valid ~ .float_label,.float_input[type="email"]:invalid ~ .float_label  {
+    color:#33A;
+    font-size:11px;
+    left:5px;
+    top:-15px;
+}
+/**********************/

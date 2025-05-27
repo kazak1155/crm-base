@@ -1,0 +1,116 @@
+.form-table-header th
+{
+  min-width:100px;
+  padding:5px;
+  color: #0073ea;
+}
+.rate-prices table
+{
+  border-collapse:collapse;
+}
+.rate-prices table td + td
+{
+  border-left:1px solid #dddddd
+}
+.rate-prices th
+{
+  border:1px solid #dddddd
+}
+.rate-prices .blank-row td + td:not(.save-row)
+{
+	border-bottom:1px solid #dddddd
+}
+.rates-tree-container button
+{
+	outline: none;
+	padding: 6px 0;
+	margin:5px 0;
+	width:calc(50% - 3px);
+}
+.float_label_wrapper
+{
+	min-width: 0;
+}
+.rates-content > div,
+.rate-data > div
+{
+	display: inline-block;
+	vertical-align: top;
+}
+.rates-tree-container
+{
+	margin-top: 5px;
+}
+.rates-content .rates-tree-container
+{
+	width:calc(30%);
+}
+
+.tree-minus,.tree-leaf
+{
+  background-image:none;
+}
+.rates-content .fa-arrow-right,
+.rates-content .fa-chevron-up
+{
+	font-size: 1.33333333em;
+	line-height: 18px;
+	vertical-align: -15%;
+}
+.rates-content .fa-arrow-right
+{
+	color:red;
+}
+.rates-content .fa-chevron-up
+{
+	color:green;
+}
+.rates-content .fa-arrow-right
+{
+	font-size: 15px;
+}
+.slide-set
+{
+	background-color:#FFF;
+	border: none;
+	box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+	margin:0;
+}
+.slide-set legend
+{
+	text-align: center;
+	font-size:14px;
+	background-color:#F6F6F6;
+	font-weight: bold;
+	color: #444444;
+	padding:5px 10px;
+	border: 2px solid #0073EA;
+}
+.rate-data
+{
+	width:calc(70% - 5px);
+}
+.rate-data table
+{
+	width: 100%;
+}
+.rate-prices,
+.rate-tpl-container
+{
+	width: calc(50% - 10px);
+}
+.init-none
+{
+	display: none;
+}
+.rate-data-form,
+.rate-tpl-container
+{
+	margin-top:5px;
+}
+.rate-data-form form
+{
+	height: 500px;
+	overflow-y: scroll;
+}
+

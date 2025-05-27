@@ -1,0 +1,14 @@
+#gridcontainer { height:calc(100% - 35px); }
+#gridcontainer > div { display: inline-block; vertical-align: top;}
+.agents-wrapper { width:30%; }
+.statistics-wrapper {
+	height: 100%;
+	margin-top: 10px;
+	width:calc(70% - 10px);
+	box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+	background-color:#FFF;
+}
+.statistics-content
+{
+	height: 100%;
+}

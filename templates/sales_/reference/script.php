@@ -1,0 +1,43 @@
+<?php
+if(!isset($this))
+{
+	header("Status: 301 Moved Permanently");
+	header("Location:http://".$_SERVER['HTTP_HOST']."/php/tmpl/iframe_tmpl?forced=true&reference=".$_SERVER['REQUEST_URI']);
+	exit;
+}
+$this->con_database('arredo'); 
+?>
+<script type="text/javascript">
+$(function() {
+	new jqGrid$({
+		main:true,
+		name:'libs',
+		id:'Код',
+		table:'Справочники',
+		tableSort:'ASC',
+		onCellSelect:true,
+		beforeSubmitCell:true,
+		filterToolbar:true,
+		delOpts:true,
+		navGrid:true,
+		defaultPage:false,
+		libsGrid:true,
+		useLs:false,
+		cn:['',''],
+		cm:[
+			{
+				name:'Код',hidden:true
+			},
+			{
+				name:'Prepare',resizable:false
+			}
+		],
+		options:{
+			shrinkToFit:true,
+			autowidth:true,
+			cellEdit:true,
+			height:gridHeight(30)
+		}
+	})
+})
+</script>

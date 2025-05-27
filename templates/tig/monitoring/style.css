@@ -1,0 +1,41 @@
+.progressbar{
+	width:200%;
+	height:16px;
+	position:relative;
+	left:-19px
+}
+.progressbar_start
+{
+	width:200%;
+	height:16px;
+}
+.progressbar_end
+{
+	width:200%;
+	height:16px;
+	position:relative;
+	right:48px;
+}
+.progressbar-inner{
+    height:100%;
+    background:#999;
+    background-size:18px 18px;
+    background-color: #ac0;   
+}
+.progressbar_start .progressbar-inner,.progressbar_end .progressbar-inner
+{
+	border-radius:2px;
+}
+.progressbar-green .progressbar-inner{
+	background-color:#ac0;
+	width:90%;
+}
+
+.progressbar-blue .progressbar-inner{
+	background-color:#7ce;
+	width:90%;
+}
+.progressbar-red .progressbar-inner{
+	background-color:#ff6666;
+	width:90%;
+}

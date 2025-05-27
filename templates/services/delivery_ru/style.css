@@ -1,0 +1,18 @@
+.sel_cont
+{
+	margin: 5px 0;
+}
+.select2me
+{
+	width:100%;
+}
+.sel_cont .select2-container--default .select2-selection--single, .sel_cont .select2-selection__arrow{
+    height:30px !important;
+    outline: none;
+}
+.sel_cont .select2-selection__rendered {
+    line-height:28px !important;
+}
+.sel_cont .select2me {
+    min-width:100px;
+}

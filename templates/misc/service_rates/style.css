@@ -1,0 +1,96 @@
+.rates-tree-container button
+{
+	outline: none;
+	padding: 6px 0;
+	margin:5px 0;
+	width:calc(50% - 2px);
+}
+.float_label_wrapper
+{
+	min-width: 0;
+}
+.rates-content > div,
+.rate-data > div
+{
+	display: inline-block;
+	vertical-align: top;
+}
+.rates-tree-container
+{
+	margin-top: 5px;
+}
+.rates-content .rates-tree-container
+{
+	width:30%;
+}
+
+.tree-minus,.tree-leaf
+{
+  background-image:none;
+}
+.rates-content .fa-arrow-right,
+.rates-content .fa-chevron-up
+{
+	font-size: 1.33333333em;
+	line-height: 18px;
+	vertical-align: -15%;
+}
+.rates-content .fa-arrow-right
+{
+	color:red;
+}
+.rates-content .fa-chevron-up
+{
+	color:green;
+}
+.rates-content .fa-arrow-right
+{
+	font-size: 15px;
+}
+.slide-set
+{
+	background-color:#FFF;
+	border: 1px solid #10498D;
+	margin:0;
+}
+.slide-set legend
+{
+	text-align: center;
+	font-size:14px;
+	background-color:#F6F6F6;
+	font-weight: bold;
+	color: #444444;
+	padding:5px 10px;
+	border: 2px solid #0073EA;
+}
+.rate-data
+{
+	width:calc(70% - 4px);
+}
+.rate-data table
+{
+	width: 100%;
+}
+.rate-prices,
+.rate-tpl-container
+{
+	width: calc(50% - 10px);
+}
+.init-none
+{
+	display: none;
+}
+.rate-data-form,
+.rate-tpl-container
+{
+	margin-top:5px;
+}
+.rate-data-form form
+{
+	height: 300px;
+	overflow-y: scroll;
+}
+.rate-params-wrapper form
+{
+
+}

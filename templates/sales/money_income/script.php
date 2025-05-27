@@ -1,0 +1,101 @@
+<script type="text/javascript">
+$(function() {
+	new jqGrid$({
+		main:true,
+		name:'orders_income',
+		table:'Заказы_Приход_view',
+		tableQuery:'Заказы_Приход',
+		title:'Приход',
+		id:'Код',
+		tableSort:'ASC',
+		filterToolbar:true,
+		delOpts:true,
+		footer:[
+			{col:'Приход',calc:'sum'}
+		],
+		beforeSubmitCell:true,
+		navGrid:true,
+		cn:[
+			"Код","Клиент","Тип прихода","Номер заказа","Приход","Валюта","Номер платежа","Дата прихода","Примечание"
+		],
+		cm:[
+			{
+				name: "Код",index:"Код",width:50,hidden:true,editable:false,editrules:{edithidden:false},hidedlg:true
+			},
+
+			{
+				name: "Клиенты_Код",index:"Клиенты_Код",formatter:'select',width:200,stype:'select',
+				formatoptions:{
+					value:<?php echo $this->Core->get_lib(['tname'=>'З_Б_Клиенты']) ?>
+				},
+				searchoptions:{
+					value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'З_Б_Клиенты'})}
+				},
+				editoptions:{
+					dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'З_Б_Клиенты'},opts,this); }
+				},
+				cellattr:function(rowId,val,rawObject,cm,rdata)
+				{
+					return 'class="not-editable-cell" ';
+				}
+			},
+
+			{
+				name: "Тип_Код",index:"Тип_Код",formatter:'select',width:100,stype:'select',
+				formatoptions:{
+					value:<?php echo $this->Core->get_lib(['tname'=>'З_Б_Заказы_приход_тип']) ?>
+				},
+				searchoptions:{
+					value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'З_Б_Заказы_приход_тип'})}
+				},
+				editoptions:{
+					dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'З_Б_Заказы_приход_тип'},opts,this); }
+				}
+			},
+
+			{
+				name: "Номер_заказа",index:"Номер_заказа",width:250,align:"left",
+				cellattr:textAreaCellAttr,
+				edittype:'textarea',editoptions:{rows:'1',dataInit:textAreaHeight}
+			},
+
+			{
+				name: "Приход",index:"Приход",width:50,formatter:floatFormatter
+			},
+
+			{
+				name: "Валюта_Код",index:"Валюта_Код",formatter:'select',width:100,stype:'select',
+				formatoptions:{
+					value:<?php echo $this->Core->get_lib(['tname'=>'З_Б_Валюты']) ?>
+				},
+				searchoptions:{
+					value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'З_Б_Валюты'})}
+				},
+				editoptions:{
+					dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'З_Б_Валюты'},opts,this); }
+				}
+			},
+
+			{
+				name: "Номер_платежа",index:"Номер_платежа",width:200
+			},
+
+			{
+				name: "Дата",index:"Дата",width:120,formatter:'date',
+				searchoptions:{sopt:['dateEq','dateNe','dateLe','dateGe'],dataInit: cusDp},formatoptions: {srcformat:'Y-m-d',newformat:'d.m.Y'},
+				editoptions: {maxlengh: 10,dataInit: elemWd}
+			},
+
+			{
+				name: "Примечание",index:"Примечание",width:250,align:"left",
+				cellattr:textAreaCellAttr,
+				edittype:'textarea',editoptions:{rows:'1',dataInit:textAreaHeight}
+			}
+		],
+		options:{
+			cellEdit:true,
+			shrinkToFit:true
+		}
+	})
+})
+</script>

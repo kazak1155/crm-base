@@ -1,0 +1,41 @@
+{
+    "name": "localadmin/tlc_test",
+    "description": "get all needed classes",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+    "require": {
+		 "mpdf/mpdf": "^8.2",	
+		"phpoffice/phpword": "^0.18", 
+		"phpmailer/phpmailer": "^6",
+		"picqer/php-barcode-generator": "^0.4",
+		"php-ews/php-ews": "~1.0",
+        "league/oauth2-client": "^2.4",
+        "phpoffice/phpspreadsheet": "^1.11",
+        "league/oauth2-google": "^3.0"
+	 },
+	 "autoload": {
+		 "psr-4": {
+			 "Plugins\\":"core/classes/plugins/"
+		 },
+		 "classmap":[
+			 "core/classes/site.php",
+			 "core/classes/wincache.php",
+			 "core/classes/reference.php",
+			 "core/classes/grid.php",
+			 "core/classes/connection.php",
+			 "core/classes/base.php",
+			 "core/classes/mssql_factory.php",
+			 "core/classes/user.php",
+			 "core/core.php",
+			 "core/file_system/file_stream/fs_core.php",
+			 "core/file_system/file_stream/fs_query.php",
+			 "core/mail/soap_exchange_ews.php",
+			 "core/mail/smtp_mail.php"
+		 ],
+		 "files":[
+			 "core/constants.php",
+			 "core/functions.php",
+			 "core/main.php"
+		 ]
+	 }
+}

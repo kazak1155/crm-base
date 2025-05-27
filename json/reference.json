@@ -1,0 +1,81 @@
+{
+    "adm": [
+        "online_users",
+        "reference",
+        "tlc_visits",
+        "users",
+        "users_permissions"
+    ],
+    "agents": [
+        "info",
+        "statistics",
+        "clients"
+    ],
+    "b4p": [
+        "assort",
+        "invoice",
+        "libs",
+        "price",
+        "sales",
+        "wh",
+        "wh_bulk",
+        "wh_journal",
+        "wh_move"
+    ],
+    "external": [
+        "depo_orders",
+        "formaro_orders",
+        "mgsystem_orders"
+    ],
+    "menu": [
+        "b4p_sales_report"
+    ],
+    "misc": [
+        "404",
+        "file_tree",
+        "mail_box",
+        "pivot_table",
+        "rates_moscow_adm",
+        "service_rates",
+        "translate",
+        "underconstruction"
+    ],
+    "sales": [
+        "money_income",
+        "money_outcome",
+        "orders",
+        "reference",
+        "report_orders_money",
+        "report_orders_status"
+    ],
+    "sales_": [
+        "orders",
+        "orders_bill",
+        "orders_details",
+        "orders_master",
+        "orders_prepare",
+        "reference"
+    ],
+    "services": [
+        "delivery_ru",
+        "rates_moscow_adm",
+        "service_rates"
+    ],
+    "tig": [
+        "hauls",
+        "hauls_details",
+        "journal",
+        "monitoring",
+        "orders",
+        "reference",
+        "route",
+        "statistics",
+        "cargos",
+        "customs_docs",
+        "customs_docs_ext"
+    ],
+    "bill": [
+        "hol",
+        "grp"
+    ]
+}

@@ -1,0 +1,16 @@
+.select2-results {
+    margin: 4px 4px 4px 0;
+    max-height: 150px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0 0 0 4px;
+    position: relative;
+}
+.select2-results ul {
+	max-height: 150px !important;
+}
+#orderpaking textarea
+{
+	resize:none;
+	height:50px;
+}
