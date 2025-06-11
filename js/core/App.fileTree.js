@@ -155,64 +155,124 @@ $fileTree.prototype.create_els = function()
 	document.body.appendChild(progressBar);
 	this.create_tree();
 }
-/* jsTree creator */
+/* jsTree creator */		
 $fileTree.prototype.create_tree = function()
 {
 	var self = this;
-	this.$tree_container.jstree({
+		this.$tree_container.jstree({
 		core:{
-			check_callback:function(operation, node, node_parent, node_position, more)
-			{
-				if(operation === 'move_node')
-				{
-
-					if(more.hasOwnProperty('ref'))
-					{
-						var target = more.ref;
-						if(target.a_attr.directory == false)
-							return false;
-					}
+			check_callback: function (operation, node, node_parent, node_position, more) {
+			if (operation === 'move_node') {
+				if (more.hasOwnProperty('ref')) {
+				var target = more.ref;
+				if (target.a_attr.directory == false)
+					return false;
 				}
-				return true;
+			}
+			return true;
 			},
-			data:{
-				dataType:'json',
-				url:'/core/file_system/file_stream/fs_request',
-				type:'post',
-				data:{
-					oper:'view'
-				},
-				success:function(responce)
-				{
-					self.root = responce[0];
-					self.define('node_names',responce);
-					self.tree_container.$jstree = self;
+			data: function (node, callback) {
+				// Определяем путь к текущему узлу (если это не корень)
+				const parentPath = node.original && node.original.path ? node.original.path : '';
 
-				}
+				$.ajax({
+					url: '/core/file_system/file_stream/fs_request',
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						oper: 'view',
+						path: parentPath // передаём путь, если нужно
+					},
+					success: function (response) {
+						// Пример: добавляем путь к каждому узлу, если сервер не добавил
+						const processed = response.map(item => {
+							// Если сервер уже вернул path — оставляем
+							if (item.path) return item;
+
+							// Иначе — собираем путь вручную
+							const itemPath = parentPath
+							? parentPath + '/' + item.text
+							: item.text;
+
+							return {
+								...item,
+								path: itemPath
+							};
+						});
+
+						callback(processed);
+					}
+				});
 			},
 			animation:false,
-			multiple:false,
+			multiple:true,
 			themes:{
 				dots:true,
 				stripes:true
 			}
 		},
-		plugins:['dnd','search','wholerow'],
-		dnd:{
-			copy:false,
-			touch:true,
-			is_draggable:function(data)
-			{
+		plugins: ['dnd', 'search', 'wholerow'],
+		dnd: {
+			copy: false,
+			touch: true,
+			is_draggable: function (data) {
 				return true;
-				/*
-				if(data[0].a_attr.directory == true)
-					return false;
-				else
-					return true;
-				*/
-			}
+			} 	
 		}
 	})
+	// this.$tree_container.jstree({
+	// 	core:{
+	// 		check_callback:function(operation, node, node_parent, node_position, more)
+	// 		{
+	// 			if(operation === 'move_node')
+	// 			{
+	// 				if(more.hasOwnProperty('ref'))
+	// 				{
+	// 					var target = more.ref;
+	// 					if(target.a_attr.directory == false)
+	// 						return false;
+	// 				}
+	// 			}
+	// 			return true;
+	// 		},
+	// 		data:{
+	// 			dataType:'json',
+	// 			url:'/core/file_system/file_stream/fs_request',
+	// 			type:'post',
+	// 			data:{
+	// 				oper:'view'
+	// 			},
+	// 			success:function(responce)
+	// 			{
+	// 				self.root = responce[0];
+	// 				self.define('node_names',responce);
+	// 				self.tree_container.$jstree = self;
+
+	// 			}
+	// 		},
+	// 		animation:false,
+	// 		multiple:true,
+	// 		themes:{
+	// 			dots:true,
+	// 			stripes:true
+	// 		}
+	// 	},
+	// 	plugins:['dnd','search','wholerow'],
+	// 	dnd:{
+	// 		copy:false,
+	// 		touch:true,
+	// 		is_draggable:function(data)
+	// 		{
+	// 			return true;
+	// 			/*
+	// 			if(data[0].a_attr.directory == true)
+	// 				return false;
+	// 			else
+	// 				return true;
+	// 			*/
+	// 		}
+	// 	}
+	// })
 	.on({
 		'move_node.jstree':function(e,data){
 			var node_moved = data.node,msg;
@@ -326,6 +386,7 @@ $fileTree.prototype.controls_actions = function(oper,button)
 	this.action_button = button;
 	this.current_operation = oper;
 	this.define('selection');
+	// console.log(this.query_prepare(oper) == false)
 	if(this.query_prepare(oper) == false)
 		return;
 	switch (oper) {
@@ -348,6 +409,7 @@ $fileTree.prototype.controls_actions = function(oper,button)
 			document.body.removeChild(download);
 			break;
 		case 'delete' :
+			// console.log('push delete')
 			this.delete_node();
 			break;
 		default :
@@ -438,33 +500,186 @@ $fileTree.prototype.rename = function(callback)
 }
 $fileTree.prototype.delete_node = function()
 {
-	if(this.selected_obj.a_attr.root == true)
+	const selectedIdsOrig = this.$tree_container.jstree('get_selected');
+	const selectedNodes = this.$tree_container.jstree('get_selected', true);
+	const nodeNames = selectedNodes.map(node => node.text);
+	// console.log('Имена выбранных узлов:\n' + nodeNames.join('\n'));
+	// console.log('удалить - ид выбранных файлов:\n' + selectedIdsOrig.join('\n') + 'Имена выбранных узлов:\n' + nodeNames.join('\n'));
+	const self = this;
+
+	if (selectedIdsOrig.length === 0) {
+		alert('Нет выбранных элементов для удаления');
 		return;
-	var msg,msg_text,self = this;
-	if(this.selected_obj.text.length > 20)
-		msg_text = this.selected_obj.text.substr(0,15) + '...';
-	else
-		msg_text = this.selected_obj.text
-	if(this.selected_obj.a_attr.directory == true)
-		msg = 'Вы уверены что хотите удалить папку "' + msg_text + '" и все её содержимое?';
-	else
-		msg = 'Вы уверены что хотите удалить файл "' + msg_text + '"?';
+	}
+
+	let msg;
+	if (selectedIdsOrig.length === 1) {
+		const node = this.$tree_container.jstree('get_node', selectedIdsOrig[0]);
+		let msg_text = node.text.length > 20 ? node.text.substr(0, 15) + '...' : node.text;
+		msg = (node.a_attr && node.a_attr.directory === true)
+			? `Вы уверены что хотите удалить папку "${msg_text}" и все её содержимое?`
+			: `Вы уверены что хотите удалить файл "${msg_text}"?`;
+	} else {
+		msg = `Вы уверены что хотите удалить ${selectedIdsOrig.length} выбранных элементов?`;
+	}
+
 	$.confirm({
-		message:msg,
-		width:'500px',
-		done_func:function()
-		{
-			self.$tree_container.jstree('delete_node',self.selected);
-			self.query();
+		message: msg,
+		width: '500px',
+		done_func: function () {
+
+			const selectedIds = selectedIdsOrig.slice(); // копия массива
+
+			function deleteNext() {
+				if (selectedIds.length === 0) {
+					console.log('✅ Все выбранные узлы удалены.');
+					self.query(true); // обновляем дерево после удаления всех
+					return;
+				}
+
+				const nodeId = selectedIds.shift();				
+				const node = self.$tree_container.jstree('get_node', nodeId);
+				if (!node) {
+					console.warn('Узел с ID', nodeId, 'не найден. Пропускаем удаление.');
+					deleteNext();
+					return;
+				}
+				self.selected_obj = node;
+				const a_attr = node.a_attr || {};
+				const postData = {
+					stream_id: a_attr.stream_id || null,
+					directory: a_attr.directory || false,
+					oper: 'delete'
+				};
+
+				console.log('Удаляем узел:', node.text ? node.text : '<Неизвестное имя>', nodeId);
+
+				self.query(true, function(data) {
+					self.$tree_container.jstree('delete_node', nodeId);
+					deleteNext();
+				}, {
+					block: true,
+					error: function(xhr, status, err) {
+						console.error('Ошибка при удалении узла:', node.text, err);
+						// Продолжаем удалять следующие узлы, несмотря на ошибку
+						deleteNext();
+					},
+					// Передаем postData как часть данных запроса, если требуется
+					data: postData
+				});
+			}
+
+			deleteNext();
 		},
-		cancel_func:function()
-		{
+		cancel_func: function () {
 			$(this).dialog('close');
 			delete self.action_button;
 			delete self.current_operation;
 		}
 	});
-}
+};
+
+
+// $fileTree.prototype.delete_node = function()
+// {
+// 	const selectedIds = this.$tree_container.jstree('get_selected');
+// 	const self = this;
+
+// 	if (selectedIds.length === 1) {
+// 		const nodeId = selectedIds[0];
+// 		const node = this.$tree_container.jstree('get_node', nodeId);
+
+// 		let msg_text = node.text.length > 20 ? node.text.substr(0, 15) + '...' : node.text;
+// 		let msg = (node.a_attr && node.a_attr.directory === true)
+// 			? `Вы уверены что хотите удалить папку "${msg_text}" и все её содержимое?`
+// 			: `Вы уверены что хотите удалить файл "${msg_text}"?`;
+
+// 		$.confirm({
+// 			message: msg,
+// 			width: '500px',
+// 			done_func: function () {
+// 				self.$tree_container.jstree('delete_node', nodeId);
+// 				self.query(); // Обновляем дерево после удаления
+// 			},
+// 			cancel_func: function () {
+// 				$(this).dialog('close');
+// 				delete self.action_button;
+// 				delete self.current_operation;
+// 			}
+// 		});
+// 	} else if (selectedIds.length > 1) {
+// 		const idsToDelete = [...selectedIds];
+
+// 		$.confirm({
+// 			message: `Вы уверены что хотите удалить ${idsToDelete.length} выбранных элементов?`,
+// 			width: '500px',
+// 			done_func: function () {
+// 				function deleteNext() {
+// 					if (idsToDelete.length === 0) {
+// 						console.log('✅ Все выбранные узлы удалены.');
+// 						// self.query(); 
+// 						return;
+// 					}
+
+// 					const nodeId = idsToDelete.shift();
+
+// 					try {
+// 						self.$tree_container.jstree('delete_node', nodeId);
+// 					} catch (error) {
+// 						console.error('❌ Ошибка при удалении узла:', nodeId, error);
+// 					}
+
+// 					// Подождать немного, чтобы jsTree успел обновиться
+// 					setTimeout(deleteNext, 100);
+// 					const parentId = self.$tree_container.jstree('get_node', nodeId).parent;
+// 					self.$tree_container.jstree('refresh_node', parentId);
+
+// 				}
+
+// 				console.log('🔁 Начинаем удаление узлов:', idsToDelete);
+// 				deleteNext();
+// 			},
+// 			cancel_func: function () {
+// 				$(this).dialog('close');
+// 				delete self.action_button;
+// 				delete self.current_operation;
+// 			}
+// 		});
+// 	}
+
+
+
+	// console.log(this.selected)	
+	// console.log(this.selected_obj.a_attr.root == true)
+	// if(this.selected_obj.a_attr.root == true)
+	// 	return;
+	// var msg,msg_text,self = this;
+	// if(this.selected_obj.text.length > 20)
+	// 	msg_text = this.selected_obj.text.substr(0,15) + '...';
+	// else
+	// 	msg_text = this.selected_obj.text
+	// if(this.selected_obj.a_attr.directory == true) {
+	// 	const selectedIds = this.$tree_container.jstree('get_selected');
+	// 	console.log(selectedIds)
+	// 	msg = 'Вы уверены что хотите удалить папку "' + msg_text + '" и все её содержимое?';
+ 	// } else
+	// 	msg = 'Вы уверены что хотите удалить файл "' + msg_text + '"?';
+	// $.confirm({
+	// 	message:msg,
+	// 	width:'500px',
+	// 	done_func:function()
+	// 	{
+	// 		self.$tree_container.jstree('delete_node',self.selected);
+	// 		self.query();
+	// 	},
+	// 	cancel_func:function()
+	// 	{
+	// 		$(this).dialog('close');
+	// 		delete self.action_button;
+	// 		delete self.current_operation;
+	// 	}
+	// });
+// }
 $fileTree.prototype.refresh = function()
 {
 	this.$tree_container.jstree('deselect_all');
@@ -473,13 +688,31 @@ $fileTree.prototype.refresh = function()
 }
 $fileTree.prototype.define = function(type,data)
 {
+	// console.log(type)
 	if(typeof type === typeof undefined)
 		return;
 	switch (type)
 	{
-		case 'selection':
-			this.selected = document.getElementById(this.$tree_container.jstree('get_selected'));
-			this.selected_obj = this.$tree_container.jstree('get_node',this.selected);
+		case 'selection':			
+			const selectedIds = this.$tree_container.jstree('get_selected'); // массив ID
+			this.selected = selectedIds.map(id => document.getElementById(id)); // массив элементов <li> или null, если элемент не найден
+			const streamIds = selectedIds.map(id => {
+				const node = this.$tree_container.jstree('get_node', id);
+				return node && node.a_attr ? node.a_attr.stream_id : null;
+			}).filter(id => id != null);
+
+			const selectedNodes = this.$tree_container.jstree('get_selected', true);
+
+
+			const nodeNames = selectedNodes.map(node => node.text);
+			// console.log('Имена выбранных узлов:\n' + nodeNames.join('\n'));
+			// console.log('ид выбранных файлов:\n' + selectedIds.join('\n') + 'Имена выбранных узлов:\n' + nodeNames.join('\n'));
+			// console.log('selectedIds.map(id => document.getElementById(id))	' + selectedIds.map(id => document.getElementById(id)))
+			// this.selected = document.getElementById(this.$tree_container.jstree('get_selected'));
+			// this.selected_obj = this.$tree_container.jstree('get_node',this.selected);
+			// console.log(this.$tree_container.jstree('get_selected'))
+			// console.log(this.$tree_container.jstree('get_selected').slice())
+			// console.log('get_selected' + this.$tree_container.jstree('get_selected'))
 		break;
 		case 'deselect_all':
 			delete this.selected;
@@ -541,45 +774,88 @@ $fileTree.prototype.check_names = function(text,parent,type)
 }
 $fileTree.prototype.query_prepare = function(oper)
 {
-	this.postData = new Object();
-	if(oper != 'add_folder' && oper != 'add_file')
-	{
-		if(this.selected_obj == false)
-			return false;
-		this.postData.stream_id = this.selected_obj.a_attr.stream_id;
-	}
-	else
-	{
-		if(this.selected_obj == false)
-		{
-			/* select root folder */
-			this.$tree_container.jstree('select_node',this.root,true,false);
-			/* redefine selected */
-			this.define('selection');
-			this.postData.stream_id = this.selected_obj.a_attr.stream_id;
-		}
-		else
-		{
-			/* if file selected, find its folder and select it */
-			if(this.selected_obj.a_attr.directory == false)
-			{
-				this.$tree_container.jstree('deselect_all');
-				this.$tree_container.jstree('select_node',this.selected_obj.parent);
-				this.define('selection');
-				this.postData.stream_id = this.selected_obj.a_attr.stream_id;
-			}
-			/* make sure node is selected */
-			else
-			{
-				this.postData.stream_id = this.selected_obj.a_attr.stream_id;
-			}
+    this.postData = {};
 
-		}
-	}
-	this.postData.directory = this.selected_obj.a_attr.directory;
-	this.postData.oper = oper;
-	return true;
+    // Для операций добавления папки/файла логика своя
+    if(oper != 'add_folder' && oper != 'add_file')
+    {
+        // Получаем выбранные узлы с объектами
+        const selectedNodes = this.$tree_container.jstree('get_selected', true);
+
+        if(selectedNodes.length === 0)
+            return false;
+
+        // Фильтруем, чтобы оставить только корневые выбранные узлы (без выбранных родителей)
+        const roots = selectedNodes.filter(node => {
+            let parent = node.parent;
+            while(parent && parent !== '#') {
+                if(selectedNodes.find(n => n.id === parent)) {
+                    return false; // у узла выбран родитель — значит он не корень
+                }
+                parent = this.$tree_container.jstree('get_node', parent).parent;
+            }
+            return true;
+        });
+
+        if(roots.length === 0)
+            return false;
+
+        if(roots.length === 1) {
+            const node = roots[0];
+            if(!node.a_attr || !node.a_attr.stream_id)
+                return false;
+
+            this.postData.stream_id = node.a_attr.stream_id;
+            this.selected_obj = node;
+        } else {
+            // Собираем массив stream_id, пропуская отсутствующие
+            const streamIds = roots.map(node => node.a_attr && node.a_attr.stream_id)
+                                   .filter(id => id != null);
+
+            if(streamIds.length === 0)
+                return false;			
+            this.postData.stream_id = streamIds;
+			// console.log('this.postData.stream_id'+ this.postData.stream_id)
+			// console.log('query_prepare' + this)	
+            this.selected_obj = roots[0]; // для удобства можно взять первый корневой узел
+
+        }
+    }
+    else
+    {
+        // Логика для add_folder и add_file без изменений
+        if(this.selected_obj == false)
+        {
+            /* select root folder */
+            this.$tree_container.jstree('select_node',this.root,true,false);
+            /* redefine selected */
+            this.define('selection');
+            this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+        }
+        else
+        {
+            /* if file selected, find its folder and select it */
+            if(this.selected_obj.a_attr.directory == false)
+            {
+                this.$tree_container.jstree('deselect_all');
+                this.$tree_container.jstree('select_node',this.selected_obj.parent);
+                this.define('selection');
+                this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+            }
+            /* make sure node is selected */
+            else
+            {
+                this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+            }
+        }
+    }
+
+    this.postData.directory = this.selected_obj.a_attr.directory;
+    this.postData.oper = oper;
+
+    return true;
 }
+
 $fileTree.prototype.query_prepare_add_file = function(file)
 {
 	var self = this;
@@ -688,6 +964,7 @@ $fileTree.prototype.query_prepare_add_file = function(file)
 		})
 	}
 }
+
 $fileTree.prototype.query = function(refresh,callback,ajaxOpts)
 {
 	var self = this;
@@ -708,6 +985,8 @@ $fileTree.prototype.query = function(refresh,callback,ajaxOpts)
 			if(refresh == true)
 				self.refresh();
 			self.define('node_names',self.$tree_container.jstree().get_json('#',{flat:true}));
+			self.$tree_container.jstree('refresh');
+			$('.tree_control').attr('disabled',false);
 			delete self.action_button;
 			delete self.current_operation;
 		},
@@ -717,6 +996,7 @@ $fileTree.prototype.query = function(refresh,callback,ajaxOpts)
 			$.alert(xhr.responseJSON.message);
 		}
 	};
+	console.log(ajaxOpts)
 	if(typeof ajaxOpts !== typeof undefined)
 		$.extend(ajaxParams,ajaxOpts);
 	$.ajax(ajaxParams);
