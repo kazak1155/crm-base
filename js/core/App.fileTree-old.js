@@ -191,7 +191,7 @@ $fileTree.prototype.create_tree = function()
 				}
 			},
 			animation:false,
-			multiple:true,
+			multiple:false,
 			themes:{
 				dots:true,
 				stripes:true
@@ -323,8 +323,6 @@ $fileTree.prototype.create_tree = function()
 }
 $fileTree.prototype.controls_actions = function(oper,button)
 {
-	// console.log('button: ' + button)
-	// console.log('oper:' + oper)
 	this.action_button = button;
 	this.current_operation = oper;
 	this.define('selection');
@@ -332,7 +330,6 @@ $fileTree.prototype.controls_actions = function(oper,button)
 		return;
 	switch (oper) {
 		case 'add_folder':
-			console.log('push the button add folder')
 			this.add_folder();
 			break;
 		case 'add_file' :
@@ -357,67 +354,35 @@ $fileTree.prototype.controls_actions = function(oper,button)
 			this.query(true);
 	}
 }
-$fileTree.prototype.add_folder = function() {
-    this.action_button.disabled = true;
-    var self = this;
-
-    // Получаем id текущего выбранного узла, куда добавляем новую папку
-    var selectedId = this.$tree_container.jstree('get_selected')[0];
-    if (selectedId == undefined) {
-        // Если ничего не выделено, можно добавить в корень
-        // selectedId = '#';
-		var rootNode = this.$tree_container.jstree(true).get_node('#');
-		selectedId = rootNode.children[0];
-		// console.log(firstRootId);
-    }
-	console.log('selectedId:=', selectedId)
-    var names = this.check_names('Новая папка', selectedId);
-	// console.log('names:=', names)
-	// console.log('selectedId:=', selectedId)
+$fileTree.prototype.add_folder = function()
+{
+	/* disable button */
+	this.action_button.disabled = true;
+	var self = this;
 	var folder = new Object();
-    var folder = {
-        text: names[0] === false ? 'Новая папка' : 'Новая папка' + '(' + names[1] + ')',
-        icon: 'fa fa-lg fa-folder-o'
-    };
-	// console.log('folder:=', folder)
-    this.selected_obj = this.$tree_container.jstree('get_node', selectedId);
-	// console.log('this.selected_obj:=', this.selected_obj)
-    var create_node_callback = function(selectedId) {
-        var tree = self.$tree_container.jstree(true);
-
-        tree.deselect_all();
-        tree.select_node(selectedId);
-
-        self.selected = selectedId;
-		// console.log('self.selected:=', self.selected)
-
-        var set_node_data = function(data) {
-            var node = tree.get_node(self.selected);
-			console.log('data:=', data)
-
-            // Обновляем пользовательские данные узла
-            node.data = node.data || {};
-            node.data.stream_id = data;
-            // Можно добавить другие свойства, если нужно
-            // node.data.parent = node.parent;
-            // node.data.directory = 1;
-
-            self.define('selection');
-
-            self.node_names.push({
-                text: node.text,
-                parent: node.parent
-            });
-
-            self.action_button.disabled = false;
-        };
-
-        self.rename(set_node_data);
-    };
-
-    this.$tree_container.jstree('create_node', selectedId, folder, 'first', create_node_callback);
-};
-
+	var names = this.check_names('Новая папка',this.selected_obj.id);
+	folder.text = names[0] == false ? 'Новая папка' : 'Новая папка' + '('+ names[1] +')' ;
+	folder.icon = 'fa fa-lg fa-folder-o';
+	// console.log('node"=', node)
+	var create_node_callback = function(node)
+	{
+		self.$tree_container.jstree('deselect_all');
+		self.$tree_container.jstree('select_node',node.id);
+		self.selected = document.getElementById(self.$tree_container.jstree('get_selected'));
+		var set_node_data = function(data)
+		{
+			self.$tree_container.jstree(true).get_node(self.selected).a_attr.stream_id = data;
+			self.$tree_container.jstree(true).get_node(self.selected).a_attr.parent = self.$tree_container.jstree(true).get_node(self.selected).parent;
+			self.$tree_container.jstree(true).get_node(self.selected).a_attr.directory = 1;
+			self.define('selection');
+			/* enable button */
+			self.node_names.push({text: self.$tree_container.jstree(true).get_node(self.selected).text,parent:self.$tree_container.jstree(true).get_node(self.selected).parent})
+			self.action_button.disabled = false;
+		}
+		self.rename(set_node_data);
+	}
+	this.$tree_container.jstree('create_node',this.selected.id,folder,'first',create_node_callback)
+}
 $fileTree.prototype.add_file = function()
 {
 	var self = this;
@@ -432,131 +397,74 @@ $fileTree.prototype.add_file = function()
 	})
 	$file_input.trigger('click');
 }
-$fileTree.prototype.rename = function(callback) {
-    var self = this;
-    var selectedIds = this.$tree_container.jstree('get_selected');
-    if (selectedIds.length > 1) {
-		$.alert('Выбрано более одного элемента элемента');
-		domElement.text = editable_part;
-		esc = true;
-	} 
-
-    var tree = this.$tree_container.jstree(true);
-    var SelectNode = tree.get_node(selectedIds[0]);
-
-    var isFolder = SelectNode.a_attr.directory == 1 || SelectNode.a_attr.directory === true ? true : false;
-
-    var fullName = SelectNode.text;
-
-    var editable_part = '';
-    var non_editable_part = '';
-
-    if (isFolder) {
-        // Для папок редактируем всё имя
-        editable_part = fullName;
-        non_editable_part = '';
-    } else {
-        // Для файлов отделяем имя и расширение
-        var matchName = fullName.match(/^[^\.]+/); // имя до первой точки
-        var matchExt = fullName.match(/(\.[^\.]+)$/); // расширение (последняя точка и все после неё)
-
-        editable_part = matchName ? matchName[0] : fullName;
-        non_editable_part = matchExt ? matchExt[0] : '';
-    }
-
-    var rename_callback = function(domElement, status, esc) {
-        var newName = domElement.text;
-
-        // Проверяем новые имена на валидность
-        var check = self.check_names(newName, SelectNode.parent);
-        if (check[0] === true) {
-            $.alert('Папка с таким именем уже существует в выбранном каталоге');
-            domElement.text = editable_part;
-            esc = true;
-        }
-
-        // Переименовываем узел, добавляя расширение обратно
-        // self.$tree_container.jstree('rename_node', self.selected, newName + non_editable_part);
-		self.$tree_container.jstree('rename_node', SelectNode.id, newName + non_editable_part);
+$fileTree.prototype.rename = function(callback)
+{
+	var self = this;
+	var isFolder = this.selected_obj.a_attr.directory == true ? true : false;
+	var $selected_anchor = $(this.selected).children('a');
+	var editable_part = $selected_anchor.text().match(/^[^\.]*/)[0];
+	var non_editable_part = new String();
 
 
-        if (esc === false) {
-            // self.postData.name = newName;
-			self.postData.name = newName + non_editable_part; // сохраняем полное имя с расширением
-            self.query(true, callback);
-        } else {
-            if (self.current_operation === 'add_folder') {
-                self.$tree_container.jstree('delete_node', self.selected);
-                $('.tree_control').attr('disabled', false);
-            }
-            delete self.action_button;
-            delete self.current_operation;
-        }
-    };
+	if(!isFolder)
+		non_editable_part = $selected_anchor.text().match(/\..*/)[0];
+	var rename_callback = function(node,status,esc){
+		var check = self.check_names(node.text,node.parent);
+		if(check[0] == true)
+		{
+			$.alert('Папка с таким именем уже существует в выбранном каталоге');
+			node.text = editable_part;
+			esc = true;
+		}
+		self.$tree_container.jstree('rename_node',self.selected,node.text + non_editable_part);
+		if(esc == false)
+		{
+			self.postData.name = node.text;
+			self.query(true,callback);
+		}
+		else
+		{
+			if(self.current_operation == 'add_folder')
+			{
+				self.$tree_container.jstree('delete_node',self.selected);
+				$('.tree_control').attr('disabled',false);
+			}
+			delete self.action_button;
+			delete self.current_operation;
+		}
 
-    this.$tree_container.jstree('edit', SelectNode, editable_part, rename_callback);
-};
-
-
-
-$fileTree.prototype.delete_node = function() {
-    const self = this;
-    const selectedIds = this.$tree_container.jstree('get_selected');
-    
-    console.log("выбранные файлы с IDs:", selectedIds);
-
-    // Формируем сообщение подтверждения
-    let msg;
-    if (selectedIds.length === 1) {
-        const node = this.$tree_container.jstree('get_node', selectedIds[0]);
-        const msgText = node.text.length > 20 ? node.text.substr(0, 15) + '...' : node.text;
-        msg = (node.a_attr?.directory == 1)
-            ? `Вы уверены, что хотите удалить папку "${msgText}" и все её содержимое?`
-            : `Вы уверены, что хотите удалить файл "${msgText}"?`;
-    } else {
-        msg = `Вы уверены, что хотите удалить ${selectedIds.length} выбранных элементов?`;
-    }
-
-    $.confirm({
-        message: msg,
-        width: '500px',
-        done_func: function() {
-            // Функция для последовательного удаления с задержкой
-            const deleteNext = (index) => {
-                if (index >= selectedIds.length) return; // Все элементы удалены
-
-                const id = selectedIds[index];
-                const node = self.$tree_container.jstree('get_node', id);
-                console.log("Удаление элемента с ID:", id);
-                
-                // Формируем данные для отправки
-                self.postData = {
-                    directory: node.a_attr?.directory,
-                    oper: "delete",
-                    stream_id: id,
-                };                
-                // console.log("Отправляемые данные:", self.postData);
-                
-                // Удаляем текущий элемент
-                self.$tree_container.jstree('delete_node', id);
-                
-                // Обновляем дерево и переходим к следующему элементу
-                setTimeout(() => {
-                    self.query(); // Обновляем состояние дерева
-                    deleteNext(index + 1); // Рекурсивно удаляем следующий
-                }, 300); // удаляем следующий файл через 300 милисекунд
-            };
-
-            deleteNext(0); // Начинаем с первого элемента
-        },
-        cancel_func: function() {
-            $(this).dialog('close');
-            delete self.action_button;
-            delete self.current_operation;
-        }
-    });
-};
-
+	}
+	this.$tree_container.jstree('edit',this.selected,editable_part,rename_callback);
+}
+$fileTree.prototype.delete_node = function()
+{
+	if(this.selected_obj.a_attr.root == true)
+		return;
+	var msg,msg_text,self = this;
+	if(this.selected_obj.text.length > 20)
+		msg_text = this.selected_obj.text.substr(0,15) + '...';
+	else
+		msg_text = this.selected_obj.text
+	if(this.selected_obj.a_attr.directory == true)
+		msg = 'Вы уверены что хотите удалить папку "' + msg_text + '" и все её содержимое?';
+	else
+		msg = 'Вы уверены что хотите удалить файл "' + msg_text + '"?';
+	$.confirm({
+		message:msg,
+		width:'500px',
+		done_func:function()
+		{
+			self.$tree_container.jstree('delete_node',self.selected);
+			self.query();
+		},
+		cancel_func:function()
+		{
+			$(this).dialog('close');
+			delete self.action_button;
+			delete self.current_operation;
+		}
+	});
+}
 $fileTree.prototype.refresh = function()
 {
 	this.$tree_container.jstree('deselect_all');
@@ -565,33 +473,13 @@ $fileTree.prototype.refresh = function()
 }
 $fileTree.prototype.define = function(type,data)
 {
-	// console.log('type:=', type)
 	if(typeof type === typeof undefined)
 		return;
 	switch (type)
 	{
-		case 'selection':			
-			// Получаем массив ID выбранных элементов
-			const selectedIds = this.$tree_container.jstree('get_selected');
-			// console.log(selectedIds)
-			if(selectedIds.length === 1) {
-				// const node = this.$tree_container.jstree('get_node', selectedIds[0]);
-				// console.log('selectedIds: ' + node)
-				// console.log('node.a_attr', node.a_attr);
-				// if(node.a_attr) {
-					this.selected_obj = this.$tree_container.jstree('get_node',selectedIds[0]);
-					// this.selected.id = this.$tree_container.jstree('get_node',selectedIds[0]);
-					// console.log(this.$tree_container.jstree('get_node',selectedIds[0]))					
-				// } else {
-
-				// }
-			}
-
-			// Получаем массив объектов выбранных узлов
-			this.selected_objects = selectedIds.map(id => {
-				return this.$tree_container.jstree('get_node', id);
-			});
-
+		case 'selection':
+			this.selected = document.getElementById(this.$tree_container.jstree('get_selected'));
+			this.selected_obj = this.$tree_container.jstree('get_node',this.selected);
 		break;
 		case 'deselect_all':
 			delete this.selected;
@@ -599,13 +487,12 @@ $fileTree.prototype.define = function(type,data)
 		break;
 		case 'node_names':
 			this.node_list = data;
-			// console.log('this.node_list:=', this.node_list)		
 			if(typeof data == typeof undefined)
 				return false;
-			this.node_names = Array();			
+			this.node_names = Array();
 			for(var i = 0;i < data.length; i++)
 			{
-				this.node_names[i] = Object();				
+				this.node_names[i] = Object();
 				if(data[i].text.length == 0)
 				{
 					this.node_names[i].text = 'root';
@@ -654,87 +541,44 @@ $fileTree.prototype.check_names = function(text,parent,type)
 }
 $fileTree.prototype.query_prepare = function(oper)
 {
-    this.postData = {};
+	this.postData = new Object();
+	if(oper != 'add_folder' && oper != 'add_file')
+	{
+		if(this.selected_obj == false)
+			return false;
+		this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+	}
+	else
+	{
+		if(this.selected_obj == false)
+		{
+			/* select root folder */
+			this.$tree_container.jstree('select_node',this.root,true,false);
+			/* redefine selected */
+			this.define('selection');
+			this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+		}
+		else
+		{
+			/* if file selected, find its folder and select it */
+			if(this.selected_obj.a_attr.directory == false)
+			{
+				this.$tree_container.jstree('deselect_all');
+				this.$tree_container.jstree('select_node',this.selected_obj.parent);
+				this.define('selection');
+				this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+			}
+			/* make sure node is selected */
+			else
+			{
+				this.postData.stream_id = this.selected_obj.a_attr.stream_id;
+			}
 
-    // Для операций добавления папки/файла логика своя
-    if(oper != 'add_folder' && oper != 'add_file')
-    {
-        // Получаем выбранные узлы с объектами
-        const selectedNodes = this.$tree_container.jstree('get_selected', true);
-
-        if(selectedNodes.length === 0)
-            return false;
-
-        // Фильтруем, чтобы оставить только корневые выбранные узлы (без выбранных родителей)
-        const roots = selectedNodes.filter(node => {
-            let parent = node.parent;
-            while(parent && parent !== '#') {
-                if(selectedNodes.find(n => n.id === parent)) {
-                    return false; // у узла выбран родитель — значит он не корень
-                }
-                parent = this.$tree_container.jstree('get_node', parent).parent;
-            }
-            return true;
-        });
-
-        if(roots.length === 0)
-            return false;
-
-        if(roots.length === 1) {
-            const node = roots[0];
-            if(!node.a_attr || !node.a_attr.stream_id)
-                return false;
-
-            this.postData.stream_id = node.a_attr.stream_id;
-            this.selected_obj = node;
-        } else {
-            // Собираем массив stream_id, пропуская отсутствующие
-            const streamIds = roots.map(node => node.a_attr && node.a_attr.stream_id)
-                                   .filter(id => id != null);
-
-            if(streamIds.length === 0)
-                return false;			
-            this.postData.stream_id = streamIds;
-			// console.log('this.postData.stream_id'+ this.postData.stream_id)
-			// console.log('query_prepare' + this)	
-            this.selected_obj = roots[0]; // для удобства можно взять первый корневой узел
-
-        }
-    }
-    else
-    {
-        // Логика для add_folder и add_file без изменений
-        if(this.selected_obj == false)
-        {
-            /* select root folder */
-            this.$tree_container.jstree('select_node',this.root,true,false);
-            /* redefine selected */
-            this.define('selection');
-            this.postData.stream_id = this.selected_obj.id;
-        }
-        else
-        {
-            /* if file selected, find its folder and select it */
-            if(this.selected_obj.a_attr.directory == false)
-            {
-                this.$tree_container.jstree('deselect_all');
-                this.$tree_container.jstree('select_node',this.selected_obj.parent);
-                this.define('selection');
-                this.postData.stream_id = this.selected_obj.id;
-            }
-            /* make sure node is selected */
-            else
-            {
-                this.postData.stream_id = this.selected_obj.id;
-            }
-        }
-    }
-
-    // this.postData.directory = this.selected_obj.a_attr.directory;
-	this.postData.directory = this.selected_obj.id;
-    this.postData.oper = oper;
-
-    return true;
+		}
+	}
+	this.postData.directory = this.selected_obj.a_attr.directory;
+	this.postData.oper = oper;
+	return true;
 }
 $fileTree.prototype.query_prepare_add_file = function(file)
 {
@@ -756,7 +600,6 @@ $fileTree.prototype.query_prepare_add_file = function(file)
 	if(file.length == 1)
 	{
 		var file = file[0];
-		console.log(this.selected_obj)
 		if(this.selected_obj.a_attr.directory == true)
 		{
 			var check = this.check_names(file.name,this.selected_obj.id);
@@ -877,5 +720,4 @@ $fileTree.prototype.query = function(refresh,callback,ajaxOpts)
 	if(typeof ajaxOpts !== typeof undefined)
 		$.extend(ajaxParams,ajaxOpts);
 	$.ajax(ajaxParams);
-	// console.log(ajaxParams)
 }
