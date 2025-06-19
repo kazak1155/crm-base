@@ -191,7 +191,6 @@ $fileTree.prototype.create_tree = function()
 					self.root = responce[0];
 					self.define('node_names',responce);
 					self.tree_container.$jstree = self;
-
 				}
 			},
 			animation:false,
@@ -340,7 +339,7 @@ $fileTree.prototype.controls_actions = function(oper,button)
 		return;
 	switch (oper) {
 		case 'add_folder':
-			console.log('push the button add folder')
+			// console.log('push the button add folder')
 			this.add_folder();
 			break;
 		case 'add_file' :
@@ -349,14 +348,65 @@ $fileTree.prototype.controls_actions = function(oper,button)
 		case 'rename' :
 			this.rename();
 			break;
-		case 'download':
-			var download = document.createElement('a');
-			download.setAttribute('href',this.selected_obj.a_attr.href);
-			download.setAttribute('download', this.selected_obj.text);
-			download.style.display = 'none';
-			document.body.appendChild(download);
-			download.click();
-			document.body.removeChild(download);
+		case 'download':	
+		  // Получаем массив id выделенных элементов
+			const selectedIds = this.$tree_container.jstree('get_selected');
+
+			// Функция для скачивания одного файла по объекту с href и именем
+			const downloadFile = (file) => {
+				return new Promise(resolve => {
+				const a = document.createElement('a');
+				a.href = file.href;
+				a.download = file.name;
+				a.style.display = 'none';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				// Ждём 0,5 секунд, чтобы браузер успел начать скачивание
+				setTimeout(resolve, 500);
+				});
+			};
+
+			const getFileDataById = (id) => {
+			// Получаем объект узла jsTree
+			const node = this.$tree_container.jstree(true).get_node(id);
+
+			// Проверяем, что узел найден
+			if (!node) {
+				console.warn(`Node with id ${id} not found`);
+				return null;
+			}
+
+			// Извлекаем ссылку на файл
+			// В вашем коде это node.a_attr.href — проверьте, что поле a_attr и href действительно есть
+			const href = node.a_attr && node.a_attr.href ? node.a_attr.href : null;
+
+			// Имя файла — можно взять из node.text или из другого поля, если нужно
+			const name = node.text || 'download';
+
+			if (!href) {
+				console.warn(`No href found for node id ${id}`);
+				return null;
+			}
+
+			return { href, name };
+			};
+
+			// Последовательно скачиваем все файлы
+			(async () => {
+				for (const id of selectedIds) {
+				const file = getFileDataById(id);
+				await downloadFile(file);
+				}
+			})();		
+
+			// var download = document.createElement('a');
+			// download.setAttribute('href',this.selected_obj.a_attr.href);
+			// download.setAttribute('download', this.selected_obj.text);
+			// download.style.display = 'none';
+			// document.body.appendChild(download);
+			// download.click();
+			// document.body.removeChild(download);
 			break;
 		case 'delete' :
 			this.delete_node();
@@ -414,10 +464,8 @@ $fileTree.prototype.add_folder = function() {
                 text: node.text,
                 parent: node.parent
             });
-
             self.action_button.disabled = false;
         };
-
         self.rename(set_node_data);
     };
 
@@ -538,7 +586,6 @@ $fileTree.prototype.delete_node = function() {
                     oper: "delete",
                     stream_id: id,
                 };                
-                // console.log("Отправляемые данные:", self.postData);
                 
                 // Удаляем текущий элемент
                 self.$tree_container.jstree('delete_node', id);
