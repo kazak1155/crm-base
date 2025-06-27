@@ -71,6 +71,9 @@ class Grid extends Reference
 						$qWhere .= '('.$table.$rule->field.' IS NOT NULL AND '.$table.$rule->field.' <> \'\')';
 						break;
 					case 'in': $qWhere .= $table.$rule->field.' IN ('.$rule->data.')'; break;
+					case 'only_russian':
+						$qWhere .= '(' . $table . $rule->field . " NOT LIKE N'%[^А-Яа-яЁё ]%')";
+						break;
 					default: break;
 				}
 			}
@@ -158,6 +161,9 @@ class Grid extends Reference
 						$qWhere .= '('.$table.$rule->field.' IS NOT NULL AND '.$table.$rule->field.' <> \'\')';
 						break;
 					case 'in': $qWhere .= '('.$table.$rule->field.' IN ('.$rule->data.'))'; break;
+					case 'only_russian':
+						$qWhere .= '(' . $table . $rule->field . " NOT LIKE N'%[^А-Яа-яЁё ]%')";
+						break;
 					default: break;
 				}
 			}

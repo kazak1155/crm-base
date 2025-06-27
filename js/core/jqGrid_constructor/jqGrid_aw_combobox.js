@@ -1,5 +1,14 @@
-function jqGrid_aw_combobox$(element,data,source,grid,init_opts)
+function jqGrid_aw_combobox$(element,data,source,grid,init_opts,test)
 {
+	if (source && source.name === "Курирующий_Пользователь_Код") {
+	// делаем то-то
+	console.log('Условие выполнено — source.name равно "Курирующий_Пользователь_Код"');
+	// self.search = "^[А-Яа-яЁё]+$"
+			self.changed = true;
+			self.search = "^[А-Яа-яЁё]+$";
+			self.processing = true;
+	self.search = 12345;
+	}
 	if(typeof element === typeof undefined)
 		return $.alert('No element set');
 	if(typeof source !== typeof undefined)
@@ -151,7 +160,7 @@ jqGrid_aw_combobox$.prototype.set_default_data = function()
 	var self = this;
 	this.cc_opts = new Object();
 	this.cc_opts.minChars = 0;
-	this.cc_opts.maxItems = 20;
+	this.cc_opts.maxItems = 30;
 	this.cc_opts.autoFirst = true;
 	if(this.inForm == true || this.inLine == true)
 	{
@@ -170,7 +179,9 @@ jqGrid_aw_combobox$.prototype.set_default_data = function()
 	this.aj_data.op = 'cn';
 	this.aj_data.order = 2;
 	this.aj_data.getNull = true;
+	// this.aj_data.filters = 123;
 	this.aj_data.top = this.cc_opts.maxItems;
+	// console.log(this.aj_data.top)
 	$.extend(this.aj_data,this.data);
 	delete this.data;
 }
@@ -355,7 +366,7 @@ jqGrid_aw_combobox$.prototype.assign_keyup = function()
 {
 	var self = this,timeout;
 	if(this.predefined == true)
-	{
+	{ч
 		this.$element.bind('keyup',function(event){
 			event.stopPropagation();
 			//13 enter,27 esc,rest navigation keys
@@ -543,22 +554,47 @@ jqGrid_aw_combobox$.prototype.openlist = function()
 
 jqGrid_aw_combobox$.prototype.xhr = function(callback)
 {
-	var self = this;
+    var self = this;
+
+    var dataToSend = {
+        oper: 'view_ac_selects',
+        search: self.search,
+        info: JSON.stringify(self.aj_data)
+    };
+	console.log('self.search', self.search)
+
 	$.ajax({
-		type:'POST',
-		url:REQUEST_URL,
-		data:{
-			oper:'view_ac_selects',
-			search:self.search,
-			info:JSON.stringify(self.aj_data)
-		},
-		complete:function(jqXHR,textStatus){
+		type: 'POST',
+		url: REQUEST_URL,
+		data: dataToSend,
+		complete: function(jqXHR, textStatus) {
 			self.processing = false;
-			var res = JSON.parse(jqXHR.responseText);
-			if(res.length > 1 || self.aj_data.getNull == false)
-				self.cc.list = res;
-			if($.isFunction(callback))
+			// console.log(jqXHR.responseText);
+			var res = JSON.parse(jqXHR.responseText);      
+
+			// var hasLocalAdmin = res.some(function(item) {                
+			// 	return item.label && item.label.indexOf('LocalAdmin') !== -1;
+			// });
+
+			// if (hasLocalAdmin) {
+			// 	var rusRegex = /^[А-Яа-яЁё\s]*$/; 
+
+			// 	// Фильтруем res
+			// 	res = res.filter(function(item) {
+			// 		return item.label !== undefined && rusRegex.test(item.label.trim());
+			// 	});
+			// }
+			//добавляем пустой элмент, для сброса ответственного
+			res.unshift({ value: '', label: '---' });
+
+			if (res.length > 1 || self.aj_data.getNull == false) {
+				self.cc.list = res.slice();
+			}
+
+			if ($.isFunction(callback)) {
 				callback();
+			}
 		}
-	})
+	});
+
 }

@@ -3430,14 +3430,12 @@ S2.define('select2/data/ajax',[
       if ($.isFunction(this._request.abort)) {
         this._request.abort();
       }
-
       this._request = null;
     }
 
     var options = $.extend({
       type: 'GET'
     }, this.ajaxOptions);
-
     if (typeof options.url === 'function') {
       options.url = options.url.call(this.$element, params);
     }
@@ -3448,6 +3446,7 @@ S2.define('select2/data/ajax',[
 
     function request () {
       var $request = options.transport(options, function (data) {
+        console.log(data)
         var results = self.processResults(data, params);
 
         if (self.options.get('debug') && window.console && console.error) {
