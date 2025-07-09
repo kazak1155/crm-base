@@ -274,11 +274,16 @@ class Mssql_factory
 		}
 		$this->Core->PDO(array("exec"=>true));
 	}
-	public function view_selects()
+	public function view_selects($top = null)
 	{
+		$top = isset($_REQUEST['top']) ? (int)$_REQUEST['top'] : null;
+		
+		if ($top !== null) {
+			// error_log(json_encode( 'in view_selects top:=' . $top, JSON_UNESCAPED_UNICODE));
+    	}
 		$response = array('results'=>array());
 		$query_search = $_REQUEST['search'];
-		$query_data = json_decode($_REQUEST['info']);
+		$query_data = json_decode($_REQUEST['info']);		
 		if(!empty($this->Core->get_sess($this->op_db.'_'.$query_data->ref_tname.'_search_global')))
 		{
 			$view_search_current = $this->Core->get_sess($this->op_db.'_'.$query_data->ref_tname.'_search_current');
@@ -298,27 +303,53 @@ class Mssql_factory
 			else
 				$search_string = $view_search_current ?? null;
 		}
-		$this->Core->query = $this->view_selects_query($query_data,$_REQUEST['search'],$search_string);
+		// $this->Core->query = $this->view_selects_query($query_data,$_REQUEST['search'],$search_string);
+		$this->Core->query = $this->view_selects_query($query_data, $_REQUEST['search'], $search_string, $top);	
+		// $this->Core->query = $this->view_selects_query($query_data,$_REQUEST['search'],$search_string, 50);
+		
 		$rows = $this->Core->PDO(array('fetch_mode'=>'num'));
 		while($row = $rows->fetch())
 		{
-			if($query_data->id_only == true)
+			if($query_data->id_only == true) {
 				array_push($response['results'],array('id'=>$row[0],'text'=>$row[0]));
+			}
 			else
-			{
+			{				
 				if($query_data->id == true)
 					array_push($response['results'],array('id'=>$row[0],'text'=>$row[1]));
 				else
 					array_push($response['results'],array('id'=>$row[1],'text'=>$row[1]));
 			}
 		}
-		if(empty($query_search) && count($response['results']) > 5)
-		{
-			unset($response['results'][5]);
-			$response['results'][5] = array('id'=>'disabled','text'=>'More available...','disabled'=>'disabled');
+		if($query_data->tname == 'Заказы_статус') {
+			if ($top == null) {
+				if(empty($query_search) && count($response['results']) > 5)
+					{
+						unset($response['results'][5]);
+						$response['results'][5] = array('id'=>'More available...','text'=>'More available...');
+					}
+			}
+		} else {
+			if(empty($query_search) && count($response['results']) > 5) {
+				unset($response['results'][5]);
+				$response['results'][5] = array('id'=>'disabled','text'=>'More available...','disabled'=>'disabled');
+			}
 		}
+
+		if($query_data->tname == 'Б_Рейсы') {
+			if(empty($query_search) && count($response['results']) > 5) {
+				unset($response['results'][5]);
+				$response['results'][5] = array('id'=>'More available...','text'=>'More available...','disabled'=>'disabled');
+				unset($response['results'][0]);
+				$response['results'][0] = array('id'=>203,'text'=>'in process');
+			}
+		}
+
 		echo json_encode($response,JSON_UNESCAPED_UNICODE);
+		// error_log(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+		
 	}
+	
 	public function view_ac_selects()
 	{
 		$query_data = json_decode($_REQUEST['info']);
@@ -332,12 +363,20 @@ class Mssql_factory
 			array_push($response,['value'=>$row[0],'label'=>$row[1]]);
 		}
 		echo json_encode($response,JSON_UNESCAPED_UNICODE);
+		
 	}
-	private function view_selects_query($query_data,$search,$s_string = null,$top = 6)
+	
+	private function view_selects_query($query_data,$search,$s_string = null,$top = null)
 	{
+		// error_log(json_encode( '$query_data->tname:=' . $query_data->tname, JSON_UNESCAPED_UNICODE));	
 		/* TODO
 		 * Add operands
 		 */
+		if ($top === null) {
+        	$top = 6;
+    	} else {
+			// error_log(json_encode( '$query_data->flds:=' . $query_data->flds, JSON_UNESCAPED_UNICODE));	
+		}
 		if(empty($s_string))
 		{
 			if(empty($search))
@@ -357,6 +396,7 @@ class Mssql_factory
 		{
 			if(empty($search))
 			{
+				// error_log($query_data->tname, JSON_UNESCAPED_UNICODE);
 				$query_string = "SELECT TOP $top ".$this->Core->process_fields_v2($query_data->flds).QUERY_SPACE;
 				$query_string .= "FROM $query_data->tname".QUERY_SPACE;
 				$query_string .= "WHERE $query_data->refid IN".QUERY_SPACE;
@@ -374,6 +414,7 @@ class Mssql_factory
 		}
 		if($query_data->order != false)
 			$query_string .= "ORDER BY $query_data->order";
+		
 		return $query_string;
 	}
 }

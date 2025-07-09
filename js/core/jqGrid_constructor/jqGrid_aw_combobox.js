@@ -1,14 +1,5 @@
 function jqGrid_aw_combobox$(element,data,source,grid,init_opts,test)
 {
-	if (source && source.name === "Курирующий_Пользователь_Код") {
-	// делаем то-то
-	console.log('Условие выполнено — source.name равно "Курирующий_Пользователь_Код"');
-	// self.search = "^[А-Яа-яЁё]+$"
-			self.changed = true;
-			self.search = "^[А-Яа-яЁё]+$";
-			self.processing = true;
-	self.search = 12345;
-	}
 	if(typeof element === typeof undefined)
 		return $.alert('No element set');
 	if(typeof source !== typeof undefined)
@@ -27,6 +18,7 @@ function jqGrid_aw_combobox$(element,data,source,grid,init_opts,test)
 	if(typeof grid !== typeof undefined)
 		this.grid_related_prepare();
 	this.prepare();
+	this.source = source;
 }
 jqGrid_aw_combobox$.prototype.grid_related_prepare = function()
 {
@@ -366,7 +358,7 @@ jqGrid_aw_combobox$.prototype.assign_keyup = function()
 {
 	var self = this,timeout;
 	if(this.predefined == true)
-	{ч
+	{
 		this.$element.bind('keyup',function(event){
 			event.stopPropagation();
 			//13 enter,27 esc,rest navigation keys
@@ -552,49 +544,26 @@ jqGrid_aw_combobox$.prototype.openlist = function()
 	}
 }
 
+
 jqGrid_aw_combobox$.prototype.xhr = function(callback)
 {
-    var self = this;
-
-    var dataToSend = {
-        oper: 'view_ac_selects',
-        search: self.search,
-        info: JSON.stringify(self.aj_data)
-    };
-	console.log('self.search', self.search)
-
+	var self = this;
 	$.ajax({
-		type: 'POST',
-		url: REQUEST_URL,
-		data: dataToSend,
-		complete: function(jqXHR, textStatus) {
+		type:'POST',
+		url:REQUEST_URL,
+		data:{
+			oper:'view_ac_selects',
+			search:self.search,
+			info:JSON.stringify(self.aj_data)
+		},
+		complete:function(jqXHR,textStatus){
 			self.processing = false;
-			// console.log(jqXHR.responseText);
-			var res = JSON.parse(jqXHR.responseText);      
-
-			// var hasLocalAdmin = res.some(function(item) {                
-			// 	return item.label && item.label.indexOf('LocalAdmin') !== -1;
-			// });
-
-			// if (hasLocalAdmin) {
-			// 	var rusRegex = /^[А-Яа-яЁё\s]*$/; 
-
-			// 	// Фильтруем res
-			// 	res = res.filter(function(item) {
-			// 		return item.label !== undefined && rusRegex.test(item.label.trim());
-			// 	});
-			// }
-			//добавляем пустой элмент, для сброса ответственного
-			res.unshift({ value: '', label: '---' });
-
-			if (res.length > 1 || self.aj_data.getNull == false) {
-				self.cc.list = res.slice();
-			}
-
-			if ($.isFunction(callback)) {
+			var res = JSON.parse(jqXHR.responseText);
+			if(res.length > 1 || self.aj_data.getNull == false)
+				self.cc.list = res;
+			if($.isFunction(callback))
 				callback();
-			}
 		}
-	});
-
+	})
 }
+a

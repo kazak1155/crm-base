@@ -179,7 +179,6 @@ dataSelect2 = function(elem,options,init_opts)
 				data.ref_fld = $(elem).parents('table').find('.columns').find('select').val();
 			if(old)
 				$(elem).data('search',data);
-
 			$(this).setColProp(elem.name, {
 				searchoptions : {
 					sopt : data.hasOwnProperty('sopt') ?  [data.sopt] : ['eq']
@@ -193,10 +192,10 @@ dataSelect2 = function(elem,options,init_opts)
 				placeholder:wd < edge ? '' : app.select2placeHolder,
 				language:app.select2langVal,
 				ajax:{
-					beforeSend:function(request)
-					{
-						$('.select2-results__options li').not(':first').remove()
-					},
+					// beforeSend:function(request)
+					// {
+					// 	$('.select2-results__options li').not(':first').remove()
+					// },
 					url: REQUEST_URL,
 					type: 'POST',
 					dataType: 'json',
@@ -216,6 +215,7 @@ dataSelect2 = function(elem,options,init_opts)
 					cache: true
 				}
 			};
+			// console.log(params.term)
 			if(wd <= 100)
 				$.extend(init_obj, {dropdownCss:{'min-width':'150px'}});
 
@@ -226,6 +226,16 @@ dataSelect2 = function(elem,options,init_opts)
 				.select2(init_obj)
 				.on('select2:selecting',function(e)
 				{
+					if(elem.name == 'Статус_Код') {
+						var data = e;
+						if (data.params.args.data.id === 'More available...') { 
+							// console.log(111)
+							e.preventDefault();
+							$(this).select2('close');
+							openMoreAvailableDialog($(this), e);
+							e.preventDefault();
+						}						
+					}
 					var container = $(this).data('select2')['$container'];
 					if(wd <= 100)
 					{
@@ -561,4 +571,96 @@ positionCenter = function(form)
 		position.of = $(this.p.gridProto.parent_grid).closest('div[id^="gview_"]')
 
 	form.closest(".ui-jqdialog").position(position);
+}
+
+
+function openMoreAvailableDialog($select, e) {
+    e.preventDefault();
+
+    // Навешиваем обработчик один раз
+    if (!$select.data('moreDialogHandlerAttached')) {
+        $select.one('select2:open', function() {
+            var select2Data = $select.data('select2');
+            if (select2Data && select2Data.dropdown && select2Data.dropdown.$dropdown) {
+                var $dropdown = select2Data.dropdown.$dropdown;
+
+                // Устанавливаем стили для результатов
+                $dropdown.find('.select2-results__options').css({
+                    'max-height': '900px',
+                    'overflow-y': 'auto'
+                });
+
+                // Показываем индикатор загрузки
+                $dropdown.find('.select2-results').html('<div style="padding:10px;">Загрузка...</div>');
+
+                // AJAX запрос к базе
+                $.ajax({
+                    url: REQUEST_URL,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        oper: 'view_selects',
+                        top: 100,
+                        search: '',
+                        info: JSON.stringify({
+                            tname: 'Заказы_статус',
+                            flds: ['Код','Название'],
+                            sfld: 'Название',
+                            order: '2',
+                            id: true
+                        })
+                    },
+                    success: function(response) {
+                        if (response && Array.isArray(response.results)) {
+                            var $ul = $('<ul class="select2-results__options" role="listbox"></ul>');
+
+                            response.results.forEach(function(item) {
+                                var id = item.Код !== undefined ? item.Код : item.id;
+                                var text = item.Название !== undefined ? item.Название : item.text;
+
+                                var $li = $('<li class="select2-results__option" role="option" tabindex="0"></li>');
+                                $li.text(text);
+                                $li.data('id', id);
+
+                                // Обработчик клика по элементу списка
+                                $li.on('mouseup', function(ev) {
+                                    ev.stopPropagation();
+
+                                    // Создаём новый опциональный элемент и добавляем его в селект
+                                    var newOption = new Option(text, id, true, true);
+                                    $select.append(newOption).trigger('change');
+
+                                    // Закрываем селект
+                                    $select.select2('close');
+                                });
+
+                                $ul.append($li);
+                            });
+
+                            // Заменяем содержимое результатов на сформированный список
+                            $dropdown.find('.select2-results').html($ul);
+
+                            // Обновляем позицию dropdown (если нужно)
+                            if (typeof select2Data.dropdown._positionDropdown === 'function') {
+                                select2Data.dropdown._positionDropdown();
+                            }
+                        } else {
+                            $dropdown.find('.select2-results').html('<div style="padding:10px;">Нет данных</div>');
+                        }
+                    },
+                    error: function() {
+                        $dropdown.find('.select2-results').html('<div style="padding:10px; color:red;">Ошибка загрузки данных</div>');
+                    }
+                });
+            } else {
+                console.warn('Dropdown не найден');
+            }
+        });
+
+        // Помечаем, что обработчик уже навешен
+        $select.data('moreDialogHandlerAttached', true);
+    }
+
+    // Открываем селект (обработчик сработает один раз)
+    $select.select2('open');
 }
