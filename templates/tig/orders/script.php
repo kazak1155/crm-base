@@ -744,10 +744,10 @@ $(function() {
 				},
 				cellattr:function(rowId, val, rawObject, cm , rdata)
 				{	
-					const readyDateStr = rawObject['Дата_Готовность'];
-					console.log(rawObject)
+					const readyDateStr = rawObject['Дата_Готовность'];					
     				const statusCode = rawObject['Статус_Код'];
 					const statusDateStr = rawObject['Статус_Дата'];
+					const inskladDostavka = rawObject['Заявка_на_инсклад'];	
 					const statusDate = new Date(statusDateStr);
 					const now = new Date();
 					const readyDate = new Date(readyDateStr);
@@ -766,7 +766,7 @@ $(function() {
 					}
 
 					// проверка, что если заказ со статусом "Заказ выдан курьеру" имеет разницу между текущей датой и датой смены статуса более 4 дней, то он выделяется красным
-					if (statusDateStr !== null && statusDateStr !== undefined && statusDateStr !== '') {						
+					if (statusDateStr !== null && statusDateStr !== undefined && statusDateStr !== '' && inskladDostavka == '0') {						
 						if (!isNaN(statusDate)) {
 							const diffMs = now - statusDate;
 							const diffDays = diffMs / (1000 * 60 * 60 * 24);
