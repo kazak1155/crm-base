@@ -158,6 +158,10 @@ $fileTree.prototype.create_els = function()
 /* jsTree creator */
 $fileTree.prototype.create_tree = function()
 {
+	// var rootNode = this.$tree_container.jstree(true).get_node('#');
+	// this.selected_obj = rootNode.children[0]
+	// console.log('111', )
+
 	var self = this;
 	this.$tree_container.jstree({
 		core:{
@@ -187,7 +191,6 @@ $fileTree.prototype.create_tree = function()
 					self.root = responce[0];
 					self.define('node_names',responce);
 					self.tree_container.$jstree = self;
-
 				}
 			},
 			animation:false,
@@ -274,6 +277,10 @@ $fileTree.prototype.create_tree = function()
 		},
 		'ready.jstree':function(e,data){
 			self.$tree_container.jstree('show_dots');
+			if (self.root && self.root.id) {
+            self.$tree_container.jstree('select_node', self.root.id);
+            self.selected_obj = self.$tree_container.jstree('get_node', self.root.id);
+        	}
 		},
 		'dragover':function(e){
 			e.stopPropagation();
@@ -332,7 +339,7 @@ $fileTree.prototype.controls_actions = function(oper,button)
 		return;
 	switch (oper) {
 		case 'add_folder':
-			console.log('push the button add folder')
+			// console.log('push the button add folder')
 			this.add_folder();
 			break;
 		case 'add_file' :
@@ -341,14 +348,65 @@ $fileTree.prototype.controls_actions = function(oper,button)
 		case 'rename' :
 			this.rename();
 			break;
-		case 'download':
-			var download = document.createElement('a');
-			download.setAttribute('href',this.selected_obj.a_attr.href);
-			download.setAttribute('download', this.selected_obj.text);
-			download.style.display = 'none';
-			document.body.appendChild(download);
-			download.click();
-			document.body.removeChild(download);
+		case 'download':	
+		  // Получаем массив id выделенных элементов
+			const selectedIds = this.$tree_container.jstree('get_selected');
+
+			// Функция для скачивания одного файла по объекту с href и именем
+			const downloadFile = (file) => {
+				return new Promise(resolve => {
+				const a = document.createElement('a');
+				a.href = file.href;
+				a.download = file.name;
+				a.style.display = 'none';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				// Ждём 0,5 секунд, чтобы браузер успел начать скачивание
+				setTimeout(resolve, 500);
+				});
+			};
+
+			const getFileDataById = (id) => {
+			// Получаем объект узла jsTree
+			const node = this.$tree_container.jstree(true).get_node(id);
+
+			// Проверяем, что узел найден
+			if (!node) {
+				console.warn(`Node with id ${id} not found`);
+				return null;
+			}
+
+			// Извлекаем ссылку на файл
+			// В вашем коде это node.a_attr.href — проверьте, что поле a_attr и href действительно есть
+			const href = node.a_attr && node.a_attr.href ? node.a_attr.href : null;
+
+			// Имя файла — можно взять из node.text или из другого поля, если нужно
+			const name = node.text || 'download';
+
+			if (!href) {
+				console.warn(`No href found for node id ${id}`);
+				return null;
+			}
+
+			return { href, name };
+			};
+
+			// Последовательно скачиваем все файлы
+			(async () => {
+				for (const id of selectedIds) {
+				const file = getFileDataById(id);
+				await downloadFile(file);
+				}
+			})();		
+
+			// var download = document.createElement('a');
+			// download.setAttribute('href',this.selected_obj.a_attr.href);
+			// download.setAttribute('download', this.selected_obj.text);
+			// download.style.display = 'none';
+			// document.body.appendChild(download);
+			// download.click();
+			// document.body.removeChild(download);
 			break;
 		case 'delete' :
 			this.delete_node();
@@ -365,23 +423,17 @@ $fileTree.prototype.add_folder = function() {
     var selectedId = this.$tree_container.jstree('get_selected')[0];
     if (selectedId == undefined) {
         // Если ничего не выделено, можно добавить в корень
-        // selectedId = '#';
 		var rootNode = this.$tree_container.jstree(true).get_node('#');
 		selectedId = rootNode.children[0];
-		// console.log(firstRootId);
     }
 	console.log('selectedId:=', selectedId)
     var names = this.check_names('Новая папка', selectedId);
-	// console.log('names:=', names)
-	// console.log('selectedId:=', selectedId)
 	var folder = new Object();
     var folder = {
         text: names[0] === false ? 'Новая папка' : 'Новая папка' + '(' + names[1] + ')',
         icon: 'fa fa-lg fa-folder-o'
     };
-	// console.log('folder:=', folder)
     this.selected_obj = this.$tree_container.jstree('get_node', selectedId);
-	// console.log('this.selected_obj:=', this.selected_obj)
     var create_node_callback = function(selectedId) {
         var tree = self.$tree_container.jstree(true);
 
@@ -390,17 +442,21 @@ $fileTree.prototype.add_folder = function() {
 
         self.selected = selectedId;
 		// console.log('self.selected:=', self.selected)
-
+		var guidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         var set_node_data = function(data) {
             var node = tree.get_node(self.selected);
-			console.log('data:=', data)
+			console.log('data:=', data)	
+
+		// Проверяем, что data — строка и похожа на GUID		
+		if (typeof data !== 'string' || !guidPattern.test(data)) {
+			console.error('Некорректный stream_id:', data);
+			self.action_button.disabled = false;
+			return;
+		}    
 
             // Обновляем пользовательские данные узла
             node.data = node.data || {};
             node.data.stream_id = data;
-            // Можно добавить другие свойства, если нужно
-            // node.data.parent = node.parent;
-            // node.data.directory = 1;
 
             self.define('selection');
 
@@ -408,10 +464,8 @@ $fileTree.prototype.add_folder = function() {
                 text: node.text,
                 parent: node.parent
             });
-
             self.action_button.disabled = false;
         };
-
         self.rename(set_node_data);
     };
 
@@ -474,11 +528,8 @@ $fileTree.prototype.rename = function(callback) {
             domElement.text = editable_part;
             esc = true;
         }
-
         // Переименовываем узел, добавляя расширение обратно
-        // self.$tree_container.jstree('rename_node', self.selected, newName + non_editable_part);
 		self.$tree_container.jstree('rename_node', SelectNode.id, newName + non_editable_part);
-
 
         if (esc === false) {
             // self.postData.name = newName;
@@ -535,7 +586,6 @@ $fileTree.prototype.delete_node = function() {
                     oper: "delete",
                     stream_id: id,
                 };                
-                // console.log("Отправляемые данные:", self.postData);
                 
                 // Удаляем текущий элемент
                 self.$tree_container.jstree('delete_node', id);
@@ -546,7 +596,6 @@ $fileTree.prototype.delete_node = function() {
                     deleteNext(index + 1); // Рекурсивно удаляем следующий
                 }, 300); // удаляем следующий файл через 300 милисекунд
             };
-
             deleteNext(0); // Начинаем с первого элемента
         },
         cancel_func: function() {
@@ -575,18 +624,8 @@ $fileTree.prototype.define = function(type,data)
 			const selectedIds = this.$tree_container.jstree('get_selected');
 			// console.log(selectedIds)
 			if(selectedIds.length === 1) {
-				// const node = this.$tree_container.jstree('get_node', selectedIds[0]);
-				// console.log('selectedIds: ' + node)
-				// console.log('node.a_attr', node.a_attr);
-				// if(node.a_attr) {
-					this.selected_obj = this.$tree_container.jstree('get_node',selectedIds[0]);
-					// this.selected.id = this.$tree_container.jstree('get_node',selectedIds[0]);
-					// console.log(this.$tree_container.jstree('get_node',selectedIds[0]))					
-				// } else {
-
-				// }
+				this.selected_obj = this.$tree_container.jstree('get_node',selectedIds[0]);
 			}
-
 			// Получаем массив объектов выбранных узлов
 			this.selected_objects = selectedIds.map(id => {
 				return this.$tree_container.jstree('get_node', id);
@@ -695,15 +734,12 @@ $fileTree.prototype.query_prepare = function(oper)
             if(streamIds.length === 0)
                 return false;			
             this.postData.stream_id = streamIds;
-			// console.log('this.postData.stream_id'+ this.postData.stream_id)
-			// console.log('query_prepare' + this)	
             this.selected_obj = roots[0]; // для удобства можно взять первый корневой узел
 
         }
     }
     else
     {
-        // Логика для add_folder и add_file без изменений
         if(this.selected_obj == false)
         {
             /* select root folder */
@@ -757,6 +793,7 @@ $fileTree.prototype.query_prepare_add_file = function(file)
 	{
 		var file = file[0];
 		console.log(this.selected_obj)
+		console.log('this.selected_obj.a_attr.directory == true', this.selected_obj.a_attr.directory == true)
 		if(this.selected_obj.a_attr.directory == true)
 		{
 			var check = this.check_names(file.name,this.selected_obj.id);
@@ -800,7 +837,6 @@ $fileTree.prototype.query_prepare_add_file = function(file)
 				check = self.check_names(file[i].name,self.selected_obj.id);
 				if(check[0] == true)
 				{
-
 					self.postData.replaceFile = true;
 					$.confirm({
 						classNames:'filecheck',
@@ -877,5 +913,4 @@ $fileTree.prototype.query = function(refresh,callback,ajaxOpts)
 	if(typeof ajaxOpts !== typeof undefined)
 		$.extend(ajaxParams,ajaxOpts);
 	$.ajax(ajaxParams);
-	// console.log(ajaxParams)
 }

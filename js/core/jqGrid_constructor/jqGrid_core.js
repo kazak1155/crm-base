@@ -188,18 +188,19 @@ jqGrid$.prototype.modify_col_model = function()
 }
 jqGrid$.prototype.prepare_col_model_gtype = function(cop_opts,gtype)
 {
-	var self = this;
+	var self = this;	
 	switch (gtype)
 	{
-		case 'checkbox':
+		case 'checkbox':					
 			function onCheckBoxClickEv(rowid,grid,name)
-			{
+			{				
 				var $this = $(this);
 				var value = $this.attr('value'),new_value = value == 1 ? 0 : 1;
 				var checked = $(this).is(':checked');
 				var rowids =  $(grid).getDataIDs();
 				var colModel =  $(grid).getGridParam().colModel;
 				$this.parents('td').css('outline','none');
+				console.log(grid)
 				for (var i = 0; i < rowids.length; i++)
 				{
 					if(rowid == rowids[i])
@@ -207,20 +208,18 @@ jqGrid$.prototype.prepare_col_model_gtype = function(cop_opts,gtype)
 						i++;
 						for (var j = 0; j < colModel.length; j++)
 						{
-
 							if (colModel[j].name == name)
 							{
-
 								$(grid).editCell(i,j,true);
 								$('#'+ i +'_'+ name).attr('value', new_value);
-								$(grid).saveCell(i,j);
+								$(grid).saveCell(i,j);							
 							}
 						}
 					}
 				}
 			};
 			var custom_element_func = function(value,options)
-			{
+			{				
 				var style = 'cursor:pointer;border-radius:2px;border:1px solid #dddddd;font-size:2em;width:96%;text-align:center;',className;
 				value == 1 ? className = 'fa fa-check' : className = 'fa fa-times';
 				value == 1 ? style += 'color:green;' : style += 'color:red;';

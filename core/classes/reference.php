@@ -52,34 +52,36 @@ class Reference
 		if($empty === true)
 			$response->NULL = '';
 
-		if($cache == true)
-		{
-			$Cache_name = $this->current_db_name.'_'.$tname;
-			if($this->wincache->exists($Cache_name)) {
-				//echo 't222' . $filters;
-				return $encode ? json_encode($this->wincache->get($Cache_name), JSON_UNESCAPED_UNICODE) : $this->wincache->get($Cache_name);
-			}
-			else
-			{
-				//echo 't111'.$filters;
-				$this->query = "SELECT DISTINCT $fields FROM $tname $filters ORDER BY $order $order_by";
-				$stmt = $this->PDO($pdo_array);
-				while($row = $stmt->fetch())
-				{
-					$row[0] = addslashes($row[0]);
-					$row[1] = addslashes($row[1]);
+		// if($cache == true)
+		// {
+		// 	$Cache_name = $this->current_db_name.'_'.$tname;
+		// 	if($this->wincache->exists($Cache_name)) {
+		// 		//echo 't222' . $filters;
+		// 		return $encode ? json_encode($this->wincache->get($Cache_name), JSON_UNESCAPED_UNICODE) : $this->wincache->get($Cache_name);
+		// 	}
+		// 	else
+		// 	{
+		// 		//echo 't111'.$filters;
+		// 		$this->query = "SELECT DISTINCT $fields FROM $tname $filters ORDER BY $order $order_by";
+		// 		$stmt = $this->PDO($pdo_array);
+		// 		while($row = $stmt->fetch())
+		// 		{
+		// 			$row[0] = addslashes($row[0]);
+		// 			$row[1] = addslashes($row[1]);
 
-					$id = $labels_only === true ? $row[1] : $row[0];
-					$value = $with_id === false ? $row[0] : $row[1];
+		// 			$id = $labels_only === true ? $row[1] : $row[0];
+		// 			$value = $with_id === false ? $row[0] : $row[1];
 
-					$response->$id = $value;
-				}
-				$this->wincache->add($Cache_name,$response);
-				return $encode ? json_encode($this->wincache->get($Cache_name),JSON_UNESCAPED_UNICODE) : $this->wincache->get($Cache_name);
-			}
-		}
-		else
-		{
+		// 			$response->$id = $value;
+		// 		}
+		// 		$this->wincache->add($Cache_name,$response);
+		// 		return $encode ? json_encode($this->wincache->get($Cache_name),JSON_UNESCAPED_UNICODE) : $this->wincache->get($Cache_name);
+		// 	}
+		// }
+		// else
+		// {
+		
+
 			$this->query = "SELECT DISTINCT $fields FROM $tname $filters ORDER BY $order $order_by";
 			//Echo $this->query;
 			$stmt = $this->PDO($pdo_array);
@@ -92,9 +94,11 @@ class Reference
 				$value = $with_id === false ? $row[0] : $row[1];
 
 				$response->$id = $value;
+				// error_log('value:='. $value . ' id:='. $id);
 			}
+			// error_log($encode);
 			return $encode ? json_encode($response,JSON_UNESCAPED_UNICODE) : $response;
-		}
+		// }
 	}
 	public function get_lib_html(array $args)
 	{

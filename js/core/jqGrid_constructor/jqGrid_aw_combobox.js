@@ -1,4 +1,4 @@
-function jqGrid_aw_combobox$(element,data,source,grid,init_opts)
+function jqGrid_aw_combobox$(element,data,source,grid,init_opts,test)
 {
 	if(typeof element === typeof undefined)
 		return $.alert('No element set');
@@ -18,6 +18,7 @@ function jqGrid_aw_combobox$(element,data,source,grid,init_opts)
 	if(typeof grid !== typeof undefined)
 		this.grid_related_prepare();
 	this.prepare();
+	this.source = source;
 }
 jqGrid_aw_combobox$.prototype.grid_related_prepare = function()
 {
@@ -151,7 +152,7 @@ jqGrid_aw_combobox$.prototype.set_default_data = function()
 	var self = this;
 	this.cc_opts = new Object();
 	this.cc_opts.minChars = 0;
-	this.cc_opts.maxItems = 20;
+	this.cc_opts.maxItems = 30;
 	this.cc_opts.autoFirst = true;
 	if(this.inForm == true || this.inLine == true)
 	{
@@ -170,7 +171,9 @@ jqGrid_aw_combobox$.prototype.set_default_data = function()
 	this.aj_data.op = 'cn';
 	this.aj_data.order = 2;
 	this.aj_data.getNull = true;
+	// this.aj_data.filters = 123;
 	this.aj_data.top = this.cc_opts.maxItems;
+	// console.log(this.aj_data.top)
 	$.extend(this.aj_data,this.data);
 	delete this.data;
 }
@@ -541,6 +544,7 @@ jqGrid_aw_combobox$.prototype.openlist = function()
 	}
 }
 
+
 jqGrid_aw_combobox$.prototype.xhr = function(callback)
 {
 	var self = this;
@@ -562,3 +566,4 @@ jqGrid_aw_combobox$.prototype.xhr = function(callback)
 		}
 	})
 }
+a

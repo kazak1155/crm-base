@@ -11015,7 +11015,7 @@ $.jgrid.extend({
 			}
 		});
 	},
-	GridNav : function() {
+	GridNav : function() {		
 		return this.each(function () {
 			var  $t = this;
 			if (!$t.grid || $t.p.cellEdit !== true ) {return;}

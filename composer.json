@@ -4,8 +4,8 @@
 	"minimum-stability": "dev",
 	"prefer-stable": true,
     "require": {
-		 "mpdf/mpdf": "^8.2",	
-		"phpoffice/phpword": "^0.18", 
+		 "mpdf/mpdf": "8.0.5",	
+		"phpoffice/phpword": "0.17.0", 
 		"phpmailer/phpmailer": "^6",
 		"picqer/php-barcode-generator": "^0.4",
 		"php-ews/php-ews": "~1.0",

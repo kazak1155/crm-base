@@ -3430,14 +3430,12 @@ S2.define('select2/data/ajax',[
       if ($.isFunction(this._request.abort)) {
         this._request.abort();
       }
-
       this._request = null;
     }
 
     var options = $.extend({
       type: 'GET'
     }, this.ajaxOptions);
-
     if (typeof options.url === 'function') {
       options.url = options.url.call(this.$element, params);
     }
@@ -3449,6 +3447,8 @@ S2.define('select2/data/ajax',[
     function request () {
       var $request = options.transport(options, function (data) {
         var results = self.processResults(data, params);
+        // console.log(options)
+        
 
         if (self.options.get('debug') && window.console && console.error) {
           // Check to make sure that the response included a `results` key.
@@ -4000,7 +4000,9 @@ S2.define('select2/dropdown/hidePlaceholder',[
   };
 
   HidePlaceholder.prototype.removePlaceholder = function (_, data) {
-    var modifiedData = data.slice(0);
+    const arr = Object.values(data);
+    var modifiedData = arr.slice(0);
+    // console.log(data)
 
     for (var d = data.length - 1; d >= 0; d--) {
       var item = data[d];
@@ -4230,7 +4232,6 @@ S2.define('select2/dropdown/attachBody',[
 
   AttachBody.prototype._positionDropdown = function () {
     var $window = $(window);
-
     var isCurrentlyAbove = this.$dropdown.hasClass('select2-dropdown--above');
     var isCurrentlyBelow = this.$dropdown.hasClass('select2-dropdown--below');
 
@@ -4250,6 +4251,7 @@ S2.define('select2/dropdown/attachBody',[
     var dropdown = {
       height: this.$dropdown.outerHeight(false)
     };
+    // console.log(dropdown)
 
     var viewport = {
       top: $window.scrollTop(),

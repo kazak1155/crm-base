@@ -661,7 +661,7 @@ $(function() {
 			"Код","Цвет","Рейс","Статус","Клиент","ПодКлиент","Фабрика","Склад доставки","Заказ","ex_it","Нужна_EX","Примечание для курьера","Д.ПолучЗаявки","Д.Готовности","Д.ИнСклад","Объем","Вес","Мест",
 			"На инсклад","Дост.фабрикой","Доки","Перевозчик","Ин.склад","Страна","Квадрат","Тариф Европа","Тариф Россия","Агент заказа","Удалено","Примечание","ex","Сбор_на_инсклад","Примечание-Д","Примечание_Д_курьер","Примечание: Cостав заказа","Примечание пакинг",
 			"Дата изм.статуса","Дата оплаты","ИнСклад ШтрихКод","Весь состав","ШК_Печатался","Пакинг Мест","Объем ИнСклад","Пакинг Вес","РФ Объем","Контрагент отгрузки","Импортер","Регион отгрузки",
-			"<i class='fa fa-lg fa-exclamation-triangle'></i>","Состав_Мест","Состав_Объем","Состав_Вес","MRN","Номер Инвойса","Сумма Инвойса", "Подклиент_Текст","Ex_Files","Контакт","Телефон","Email","Фабрика","Транспортник"
+			"<i class='fa fa-lg fa-exclamation-triangle'></i>","Состав_Мест","Состав_Объем","Состав_Вес","MRN","Номер Инвойса","Сумма Инвойса", "Подклиент_Текст","Ex_Files","Контакт","Телефон","Email","Фабрика","Транспортник","Курирующий_Пользователь_Код"
 		],
 		cm:[
 			{
@@ -733,12 +733,51 @@ $(function() {
 					value:<?php echo $this->Core->get_lib(['tname'=>'Заказы_статус','fields'=>['Код','Название','Порядок'],'order'=>"Порядок"]) ?>
 				},
 				searchoptions:{
-					value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'Заказы_статус',order:"Порядок"})}
+					value:':',
+					dataInit:dataSelect2,
+					attr:{
+						'data-search':JSON.stringify({tname:'Заказы_статус',order:"Порядок"})}
 				},
 				editoptions:{
 					defaultValue:'0',
 					dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'Заказы_статус',flds:['Код','Название','Порядок'],order:'Порядок'},opts,this,{maxItems:100,sort:null}); }
-				}
+				},
+				cellattr:function(rowId, val, rawObject, cm , rdata)
+				{	
+					const readyDateStr = rawObject['Дата_Готовность'];
+					console.log(rawObject)
+    				const statusCode = rawObject['Статус_Код'];
+					const statusDateStr = rawObject['Статус_Дата'];
+					const statusDate = new Date(statusDateStr);
+					const now = new Date();
+					const readyDate = new Date(readyDateStr);
+					const diffMs = now - readyDate;
+					const diffDays = diffMs / (1000 * 60 * 60 * 24);
+					
+					// проверка, что если заказ со статусом "Заявка принята в работу" имеет разницу между текущей датой и датой готовности более 2 дней, то он выделяется красным
+					if (readyDateStr !== null && readyDateStr !== undefined && readyDateStr !== '') {
+						if (!isNaN(readyDate)) {
+							if (diffDays > 2 && statusCode == 0) {
+								return "style='background-color:#e26e6a;font-weight:bold;color:#FFF' title='Разница с датой готовности больше 2 дней'"; //красный светлее
+							}
+						} else {
+							console.log("rawObject['Дата_Готовность'] содержит некорректную дату");
+						}
+					}
+
+					// проверка, что если заказ со статусом "Заказ выдан курьеру" имеет разницу между текущей датой и датой смены статуса более 4 дней, то он выделяется красным
+					if (statusDateStr !== null && statusDateStr !== undefined && statusDateStr !== '') {						
+						if (!isNaN(statusDate)) {
+							const diffMs = now - statusDate;
+							const diffDays = diffMs / (1000 * 60 * 60 * 24);
+							if (diffDays > 4 && statusCode == 2) {
+								return "style='background-color:#8b1414;font-weight:bold;color:#FFF' title='Разница с датой изменения статуса больше 4 дней'"; // красный темнее
+							}
+						} else {
+							console.log("rawObject['Статус_Дата'] содержит некорректную дату");
+						}
+					}
+				}				
 			},
 
 			{
@@ -817,7 +856,7 @@ $(function() {
 					if	((rawObject['Состав_Объем'] == 0) 
 						|| (rawObject['Состав_Вес'] == 0))
 						{
-							return "style='background-color:red;color:white;font-weight:bold;";
+							return "style=';color:white;font-weight:bold;";
 						}
 					else if ((rawObject['Состав_Мест'] != rawObject['ИнСклад_Мест']) 
 						|| (rawObject['Состав_Объем'] != rawObject['Объем']) 
@@ -827,18 +866,21 @@ $(function() {
 						}
 				}
 			},
+
 			{
 				name: "ex_it",index:"ex_it",width:30,gtype:'checkbox',stype:'select',
 				searchoptions:{
 					width:30,value: ":;1:Да;0:Нет",dataInit:dataSelect2
 				}
 			},
+
 			{
 				name: "Нужна_EX",index:"Нужна_EX",width:30,gtype:'checkbox',stype:'select',
 				searchoptions:{
 					width:30,value: ":;1:Да;0:Нет",dataInit:dataSelect2
 				}
 			},
+
 			{
 				name: "Примечание_курьер",index:"Примечание_курьер",width:250,align:"left",
 				cellattr:textAreaCellAttr,
@@ -853,7 +895,8 @@ $(function() {
 
 			{
 				name: "Дата_Готовность",index:"Дата_Готовность",width:120,formatter:'date',
-				searchoptions:{sopt:['dateEq','dateNe','dateLe','dateGe'],dataInit: cusDp},formatoptions: {srcformat:'Y-m-d',newformat:'d.m.Y'},
+				searchoptions:{sopt:['dateEq','dateNe','dateLe','dateGe'],dataInit: cusDp},
+				formatoptions: {srcformat:'Y-m-d',newformat:'d.m.Y'},
 				editoptions: {maxlengh: 10,dataInit: elemWd}
 			},
 
@@ -1026,7 +1069,8 @@ $(function() {
 
 			{
 				name: "ex",index:"ex",width:70,editable:true,formatter:floatFormatter,formatoptions: {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: ""}
-			},	
+			},
+
 			{
 				name: "Сбор_на_инсклад",index:"Сбор_на_инсклад",width:70,editable:true,formatter:floatFormatter,formatoptions: {decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2, prefix: ""}
 			},
@@ -1036,11 +1080,13 @@ $(function() {
 				cellattr:textAreaCellAttr,
 				edittype:'textarea',editoptions:{rows:'1',dataInit:textAreaHeight}
 			},
+
 			{
 				name: "Примечание_Д_Курьер",index:"Примечание_Д_Курьер",width:150,align:"left",
 				cellattr:textAreaCellAttr,
 				edittype:'textarea',editoptions:{rows:'1',dataInit:textAreaHeight}
 			},
+
 			{
 				name: "Примечание_состав",index:"Примечание_состав",hidden:true,hidedlg:true,width:150,align:"left",addformeditable:true,
 				cellattr:textAreaCellAttr,
@@ -1143,45 +1189,90 @@ $(function() {
 					width:30,value: ":;1:Да;0:Нет",dataInit:dataSelect2
 				}
             },
+
 			{
 				name: "Состав_Мест",index:"Состав_Мест",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
-			}, 
+			},
+
 			{
 				name: "Состав_Объем",index:"Состав_Объем",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
 			}, 
+
 			{
 				name: "Состав_Вес",index:"Состав_Вес",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
-			}, 	
+			}, 
+
 			{
 				name: "MRN",index:"MRN",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
 			}, 
+
 			{
 				name: "Номер_Инвойса",index:"Номер_Инвойса",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
 			}, 
+
 			{
 				name: "Сумма_Инвойса",index:"Сумма_Инвойса",width:50,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: true}
 			}, 
+
 			{
 				name: "Подклиент_Текст",index:"Подклиент_Текст",width:50,hidden:false,editable:true,editrules:{edithidden:false},searchoptions: {searchhidden: true}
 			}, 
+
 			{
 				name: "Ex_Files",index:"Ex_Files",width:10,hidden:true,editable:false,editrules:{edithidden:false},searchoptions: {searchhidden: false}
 			}, 
 
 			{
 				name: "Контакт",index:"Контакт",width:70,editable:false
-			},																	           
+			},
+
 			{
 				name: "Телефон",index:"Телефон",width:70,editable:false
-			},	
+			},
+
 			{
-				name: "Email",index:"Email",width:70,editable:false
+				name: "Email",index:"Email",width:70
 			},	
+
 			{
 				name: "Фабрика",index:"Фабрика",hidden:true,width:70,editable:false
 			},
+
 			{
 				name: "Транспортник",index:"Транспортник",hidden:true,width:70,editable:false
+			},
+
+			{
+				// name: "Курирующий_Пользователь_Код",index:"Курирующий_Пользователь_Код",width:70,editable:true,formatter:'select',stype:'select',
+				// formatoptions:{
+				// 				'tname' => 'Пользователи',
+				// 				'cache' => false,
+				// 				'fields' => ['Код', 'Full_name'],   // Задаём явно поля для выборки
+				// 				'filters' => [
+				// 					[
+				// 						'field' => 'Full_name',
+				// 						'op' => 'only_russian',
+				// 						'data' => ''
+				// 					]
+				// 				]
+				// 			]); 
+				// },
+				// searchoptions:{
+				// 	value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'Пользователи'})}
+				// },
+				// editoptions:{
+				// 	dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'Пользователи'},opts,this); }
+				// }
+				name: "Курирующий_Пользователь_Код",index:"Курирующий_Пользователь_Код",width:70,editable:true,formatter:'select',stype:'select',
+				formatoptions:{
+					value:<?php echo $this->Core->get_lib(['tname'=>'Пользователи','cache' => false],) ?>
+				},
+				searchoptions:{
+					value:':',dataInit:dataSelect2,attr:{'data-search':JSON.stringify({tname:'Пользователи_Логисты'})}
+				},
+				editoptions:{
+					dataInit:function(elem,opts) { new jqGrid_aw_combobox$(elem,{tname:'Пользователи_Логисты'},opts,this); }
+				}
 			}
 		],
 		options:{
