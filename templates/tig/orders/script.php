@@ -765,7 +765,7 @@ $(function() {
 						}
 					}
 
-					// проверка, что если заказ со статусом "Заказ выдан курьеру" имеет разницу между текущей датой и датой смены статуса более 4 дней, то он выделяется красным
+					// проверка, что если заказ со статусом "Заказ выдан курьеру" имеет разницу между текущей датой и датой смены статуса более 4 дней и заказ не на инсклад, то он выделяется красным
 					if (statusDateStr !== null && statusDateStr !== undefined && statusDateStr !== '' && inskladDostavka == '0') {						
 						if (!isNaN(statusDate)) {
 							const diffMs = now - statusDate;
@@ -856,7 +856,7 @@ $(function() {
 					if	((rawObject['Состав_Объем'] == 0) 
 						|| (rawObject['Состав_Вес'] == 0))
 						{
-							return "style=';color:white;font-weight:bold;";
+							return "style='color:red;font-weight:bold;' title='Объем или вес состава заказа равен нулю'";
 						}
 					else if ((rawObject['Состав_Мест'] != rawObject['ИнСклад_Мест']) 
 						|| (rawObject['Состав_Объем'] != rawObject['Объем']) 
